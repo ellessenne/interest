@@ -1,0 +1,4 @@
+*.Rproj
+*.pdf
+.Rproj.user
+*_old.*
