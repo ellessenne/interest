@@ -31,7 +31,9 @@ body <- dashboardBody(
 							box(width = 12,
 									title = "Load dataset",
 									solidHeader = TRUE,
-									p("Load a dataset here containing results from a simulation study. The dataset needs to be in tidy format, and it needs to contain the following columns:"),
+									"Load a dataset here containing results from a simulation study. The dataset needs to be in ",
+									a(href = 'https://www.jstatsoft.org/article/view/v059i10', "tidy"),
+									" format, and it has to include the following columns:",
 									tags$div(
 										tags$ul(
 											tags$li(
@@ -74,7 +76,9 @@ body <- dashboardBody(
 							box(width = 2,
 									solidHeader = TRUE,
 									title = "Select scenario",
-									tableOutput("renUI")),
+									tableOutput("renUI"),
+									hr(),
+									selectInput("ref_method", label = "Reference method", choices = NULL)),
 							box(width = 5,
 									solidHeader = TRUE,
 									title = "Table",

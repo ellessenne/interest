@@ -15,13 +15,18 @@ function(input, output, session) {
 	results <- reactive({
 		if (is.null(data())) return(NULL)
 		results <- data() %>%
-			mutate(bias = (true_value - value)) %>%
 			group_by_(.dots = lapply(c("method", "par", names(data())[!(names(data()) %in% c("method", "par", "true_value", "value", "se"))]), as.symbol)) %>%
-			summarise(`Bias (mean)` = mean(bias),
-								`Bias (median)` = median(bias),
-								`SE (mean)` = mean(se),
-								`SE (median)` = median(se)) %>%
-			ungroup()
+			summarise(n = n(),
+								`bar(beta)` = mean(value),
+								`bar(s^2)` = mean(se),
+								`V(beta)` = 1 / (n() - 1) * sum((value - `bar(beta)`) ^ 2),
+								`V(s^2)` = 1 / (n() - 1) * sum((se - `bar(s^2)`) ^ 2),
+						 true_value = mean(true_value)) %>%
+			ungroup() %>%
+			mutate(bias = `bar(beta)` - true_value,
+						 mce_bias = sqrt(`V(beta)` / n),
+						 esd = sqrt(`V(beta)`),
+						 mce_esd = sqrt(`V(beta)` / (2 * (n - 1))))
 		results
 	})
 
@@ -29,6 +34,10 @@ function(input, output, session) {
 		vars <- names(data())[!(names(data()) %in% c("method", "true_value", "value", "se"))]
 		tL <- lapply(vars, function(x) selectInput(x, x, unique(get(x, data()))))
 		tagList(tL)
+	})
+
+	observe({
+		if (!is.null(data())) updateSelectInput(session, "ref_method", choices = unique(data()$method))
 	})
 
 	output$data_table <- renderDataTable({
@@ -60,7 +69,7 @@ function(input, output, session) {
 	)
 
 	output$table_latex <- renderPrint({
-		make_results_table() %>%
+		if (!is.null(results())) make_results_table() %>%
 			xtable() %>%
 			print()
 	})
