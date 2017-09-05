@@ -5,104 +5,52 @@ header <- dashboardHeader(title = "SiReX")
 
 sidebar <- dashboardSidebar(
 	sidebarMenu(
-		menuItem("Introduction", icon = icon("info"),
-						 menuSubItem("Introduction #1", tabName = "introduction1"),
-						 menuSubItem("Introduction #2", tabName = "introduction2"),
-						 menuSubItem("Introduction #3", tabName = "introduction3"),
-						 menuSubItem("Source code and feedback", href = "https://github.com/ellessenne/sirex/")),
-		menuItem("Data", icon = icon("database"),
-						 menuSubItem("Load data", tabName = "load_data"),
-						 menuSubItem("View data", tabName = "view_data")),
-		menuItem("Explore results", tabName = "results", icon = icon("search"))
+		menuItem("Introduction", tabName = "introductionTab", icon = icon("info")),
+		menuItem("Data", tabName = "dataTab", icon = icon("database")),
+		menuItem("View uploaded data", tabName = "viewDataTab", icon = icon("search")),
+		menuItem("Summary statistics", tabName = "summaryStatisticsTab", icon = icon("list-ol")),
+		menuItem("Plots", tabName = "plotsTab", icon = icon("bar-chart")),
+		menuItem("Source code", href = "https://github.com/ellessenne/sirex/", icon = icon("github"))
+		)
 	)
-)
 
 body <- dashboardBody(
 	tags$head(
 		tags$link(rel = "stylesheet", type = "text/css", href = "theme.css")
 	),
 	tabItems(
-		tabItem(tabName = "introduction1", p("Introduction tab #1!")),
-		tabItem(tabName = "introduction2", p("Introduction tab #2!")),
-		tabItem(tabName = "introduction3", p("Introduction tab #3!")),
+		tabItem(tabName = "introductionTab"),
 
-		tabItem(tabName = "load_data",
-						fluidRow(
-							box(width = 12,
-									title = "Load dataset",
-									solidHeader = TRUE,
-									"Load a dataset here containing results from a simulation study. The dataset needs to be in ",
-									a(href = 'https://www.jstatsoft.org/article/view/v059i10', "tidy"),
-									" format, and it has to include the following columns:",
-									tags$div(
-										tags$ul(
-											tags$li(
-												code("method"), ", a column representing the different models that are being compared;"
-											),
-											tags$li(
-												code("par"), ", a column representing each parameter estimated and compared;"
-											),
-											tags$li(
-												code("true_value"), ", the true value of a given parameter, under a given simulation scenario;"
-											),
-											tags$li(
-												code("value"), ", the estimated coefficient from a given model, for a given parameter, under a given simulation scenario;"
-											),
-											tags$li(
-												code("se"), ", the estimated standard error of a given estimated coefficient;"
-											)
-										)
-									),
-									p("All the remaining columns from the dataset are assumed to be the parameters that define each simulation scenario."),
-									p("If you wish, you can download a sample dataset ", a(href = "", "here"), "."),
-									fileInput('file1', 'Choose CSV File',
-														accept = c('text/csv', 'text/comma-separated-values,text/plain', '.csv'))
-									)
-							)
-						),
-
-		tabItem(tabName = "view_data",
-						fluidRow(
-							box(width = 12,
-									solidHeader = TRUE,
-									title = "View dataset",
-									dataTableOutput("data_table"))
-						)
+		tabItem(tabName = "dataTab",
+						box(width = 12,
+								solidHeader = TRUE,
+								p("Use the tabs below to upload your dataset."),
+								p("The file must be a comma-separated (.csv) file, and you can either upload a file stored on your computer or provide a link to a file store online (e.g. on GitHub). It is allowed to upload or link files ending in .gz, .bz2, .xz, or .zip: they will be automatically decompressed. Links to data must start with http://, https://, ftp://, or ftps://."),
+								p("The dataset must be in tidy format, with variables in columns and observations in rows. It must include the following variables:"),
+								tags$ul(
+									tags$li(em("i"), ", a variable representing the replication ID;"),
+									tags$li(em("par"), ", a variable representing an estimand;"),
+									tags$li(em("coef"), ", a variable representing an estimated coefficient or value from the simulation study;"),
+									tags$li(em("se"), ", a variable representing the standard error of the estimated coefficient;"),
+									tags$li(em("true"), ", a variable representing the true value of a given parameter;"),
+									tags$li(em("method"), ", a variable representing the methods compared with this simulation study.")),
+								p("The remaining variables will be assumed to be covariates defining each data-generating mechanisms, such as sample size, true distribution, etc.")),
+						box(width = 12,
+								solidHeader = TRUE,
+								p("Select method for uploading data:"),
+								radioButtons(inputId = "typeDataUpload",
+														 label = NULL,
+														 choices = c("Upload file" = "uploadData", "Link file" = "linkData", "Paste file" = "pasteData"),
+														 selected = "uploadData",
+														 inline = TRUE),
+								uiOutput(outputId = "loadData"))
 		),
-
-		tabItem(tabName = "results",
-						fluidRow(
-							tags$head(tags$style(HTML("#results_table {margin: auto; width: 0.666;}"))),
-							box(width = 2,
-									solidHeader = TRUE,
-									title = "Select scenario",
-									tableOutput("renUI"),
-									hr(),
-									selectInput("ref_method", label = "Reference method", choices = NULL)),
-							box(width = 5,
-									solidHeader = TRUE,
-									title = "Table",
-									tableOutput("results_table"),
-									hr(),
-									p("LaTeX code for this table:"),
-									verbatimTextOutput("table_latex")),
-							box(width = 5,
-									solidHeader = TRUE,
-									title = "Plot",
-									p("Select summary statistic to plot:"),
-									selectInput("plot_stat", "Select statistic", choices = c("Bias (mean)", "Bias (median)", "SE (mean)", "SE (median)")),
-									plotOutput("results_plot"),
-									hr(),
-									p("Export plot:"),
-									numericInput("plot_width", "Plot width", value = 6, min = 1, max = 50),
-									numericInput("plot_height", "Plot height", value = 6, min = 1, max = 50),
-									numericInput("plot_resolution", "Plot resolution (in DPI)", value = 150, min = 72, max = 320),
-									radioButtons("plot_format", label = "Format", choices = c("png", "pdf"), selected = "png"),
-									downloadButton("download_plot", label = "Download", icon = icon("download")),
-									p("N.B.: height and width are in inches, not pixels.")
-							)
-							)
-						)
+		tabItem(tabName = "viewDataTab",
+						box(width = 12,
+								solidHeader = TRUE,
+								dataTableOutput(outputId = "uploadedDataTable"))),
+		tabItem(tabName = "summaryStatisticsTab"),
+		tabItem(tabName = "plotsTab")
 	)
 )
 
