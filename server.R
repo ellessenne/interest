@@ -29,6 +29,8 @@ function(input, output, session) {
 										if (is.null(inFile)) return(NULL)
 										read_csv(inFile)
 										})
+
+		# Validate input
 		if (!is.null(df)) {
 			validate(
 				need("i" %in% names(df), "Replication ID 'i' not in the dataset"),
@@ -37,12 +39,24 @@ function(input, output, session) {
 				need("se" %in% names(df), "Standard errors 'se' not in the dataset"),
 				need("true" %in% names(df), "True value for each estimand 'true' not in the dataset"),
 				need("method" %in% names(df), "Variable with methods to compare 'method' not in the dataset")
-				)}
+			)}
+
+		# Make group (i.e. scenario) indicator variable
+		df = df %>%
+			group_by_at(.vars = names(data())[!(names(data()) %in% c("i", "par", "coef", "se", "true", "method"))]) %>%
+			ungroup() %>%
+			mutate(grpinternal = group_indices(.))
+
 		return(df)
 		})
 
 	# Make a data table with the original dataset
 	output$uploadedDataTable = renderDataTable({
-		data()
+		data() %>%
+			select(-grpinternal)
 	})
+
 }
+
+
+
