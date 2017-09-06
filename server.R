@@ -43,17 +43,18 @@ function(input, output, session) {
 
 		# Make group (i.e. scenario) indicator variable
 		df = df %>%
-			group_by_at(.vars = names(data())[!(names(data()) %in% c("i", "par", "coef", "se", "true", "method"))]) %>%
+			group_by_at(.vars = names(df)[!(names(df) %in% c("i", "par", "coef", "se", "true", "method"))])
+		df$scenario = group_indices(df)
+		df = df %>%
 			ungroup() %>%
-			mutate(grpinternal = group_indices(.))
-
+			mutate(grpinternal = paste(scenario, par, sep = "_"))
 		return(df)
 		})
 
 	# Make a data table with the original dataset
 	output$uploadedDataTable = renderDataTable({
 		data() %>%
-			select(-grpinternal)
+			select(-grpinternal, -scenario)
 	})
 
 }
