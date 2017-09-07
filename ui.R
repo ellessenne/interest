@@ -10,8 +10,10 @@ sidebar <- dashboardSidebar(
 		menuItem("View uploaded data", tabName = "viewDataTab", icon = icon("search")),
 		menuItem("Summary statistics", tabName = "summaryStatisticsTab", icon = icon("list-ol")),
 		menuItem("Plots", tabName = "plotsTab", icon = icon("bar-chart")),
+		menuItem("Feedback and comments", href = "mailto:ag475@leicester.ac.uk?Subject=SiReX%20feedback%20and%20comments", icon = icon("commenting")),
+		menuItem("Issues and bug report", href = "https://github.com/ellessenne/sirex/issues/", icon = icon("exclamation-triangle ")),
 		menuItem("Source code", href = "https://github.com/ellessenne/sirex/", icon = icon("github"))
-		)
+	)
 	)
 
 body <- dashboardBody(
