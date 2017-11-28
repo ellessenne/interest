@@ -1,0 +1,23 @@
+---
+title: "POUSSIN"
+author: "Alessandro Gasparini"
+date: "`r format(Sys.Date())`"
+output:
+  github_document:
+    fig_width: 8
+    fig_height: 8
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+```{r, echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "##", fig.retina = 2, fig.path = "README_figs/")
+```
+
+POUSSIN, acronym for _Probe OUtput of Simulation Study INteractively_, is an interactive web app developed using R and [`shiny`](https://shiny.rstudio.com/). It allows exploring results from simulation studies interactively.
+
+<img src="README_figs/poussin.jpg" width="250" style="display: block; margin: auto;" />
+
+# Installation
+
+# Launch application
+

@@ -1,5 +1,15 @@
-# SiReX
+POUSSIN
+================
+Alessandro Gasparini
+2017-11-28
 
-SiReX, acronym for _Simulation Results eXplorer_, is an interactive web app developed using R and [`shiny`](https://shiny.rstudio.com/).
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+POUSSIN, acronym for *Probe OUtput of Simulation Study INteractively*, is an interactive web app developed using R and [`shiny`](https://shiny.rstudio.com/). It allows exploring results from simulation studies interactively.
 
-It allows exploring results from simulation studies interactively.
+<img src="README_figs/poussin.jpg" width="250" style="display: block; margin: auto;" />
+
+Installation
+============
+
+Launch application
+==================
