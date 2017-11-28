@@ -1,5 +1,6 @@
 ## common.R script ##
 
 # Required packages
-if (!requireNamespace("pacman")) install.packages("pacman")
-pacman::p_load("dplyr", "tidyr", "ggplot2", "readr", "shiny", "shinydashboard")
+if (!requireNamespace("devtools")) install.packages("devtools")
+if (!requireNamespace("rsimsum")) devtools::install_github("ellessenne/rsimsum")
+pacman::p_load("tidyverse", "shiny", "shinydashboard")
