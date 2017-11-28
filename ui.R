@@ -14,7 +14,7 @@ sidebar <- dashboardSidebar(
 		menuItem("Issues and bug report", href = "https://github.com/ellessenne/sirex/issues/", icon = icon("exclamation-triangle ")),
 		menuItem("Source code", href = "https://github.com/ellessenne/sirex/", icon = icon("github"))
 	)
-	)
+)
 
 body <- dashboardBody(
 	tags$head(
@@ -62,7 +62,17 @@ body <- dashboardBody(
 							tabPanel("View summary statistics",
 											 uiOutput(outputId = "summaryRefMethodSelector"),
 											 dataTableOutput(outputId = "summaryStatisticsDataTable")),
-							tabPanel("Export table"),
+							tabPanel("Export table",
+											 shiny::sliderInput(inputId = "summaryStatisticsLaTeXDigits",
+											 									 label = "Number of significant digits:",
+											 									 min = 0,
+											 									 max = 10,
+											 									 value = 4,
+											 									 step = 1,
+											 									 round = TRUE),
+											 shiny::textInput(inputId = "summaryStatisticsLaTeXCaption",
+											 								 label = "Table caption:"),
+											 shiny::verbatimTextOutput(outputId = "summaryStatisticsLaTeX")),
 							tabPanel("Export data",
 											 radioButtons(inputId = "exportSummaryStatisticsType",
 											 						 label = "Format of the file to export:",

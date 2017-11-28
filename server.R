@@ -93,6 +93,13 @@ function(input, output, session) {
 		summ()
 	})
 
+	# Make summary table in LaTeX
+	output$summaryStatisticsLaTeX <- renderPrint({
+		summ() %>%
+			xtable(caption = input$summaryStatisticsLaTeXCaption, digits = input$summaryStatisticsLaTeXDigits) %>%
+			print()
+	})
+
 	# Download data.frame with summary statistics
 	output$exportSummaryStatisticsButton = shiny::downloadHandler(
 		filename = function() {
