@@ -1,11 +1,4 @@
-## common.R script ##
+## global.R script ##
 
-# Required packages
-if (!requireNamespace("devtools")) install.packages("devtools")
+# Install rsimsum if not available
 if (!requireNamespace("rsimsum")) devtools::install_github("ellessenne/rsimsum")
-pacman::p_load("tidyverse", "shiny", "shinydashboard", "rsimsum", "xtable")
-
-# Prettify tables
-prettify = function(x) {
-
-}

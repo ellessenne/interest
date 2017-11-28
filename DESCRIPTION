@@ -6,8 +6,11 @@ Description: POUSSIN is an interactive web app developed using shinyThis package
 Authors@R: c(person("Alessandro", "Gasparini", role = c("aut", "cre"), email = "ag475@leicester.ac.uk"))
 License: GPL (>= 3)
 Imports:
+ devtools,
+ tidyverse,
  shiny,
- shinydashboard
+ shinydashboard,
+ xtable
 Suggests:
  knitr,
  testthat,
