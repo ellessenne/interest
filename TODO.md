@@ -6,9 +6,11 @@
 1. Implement plots:
     * Barplot
     * Lollyplot
-    * Estimate vs SE plot
+1. Implement printing ggplot code for plots
+1. Implement faceting for plots
 1. Allowing multiple estimands at once
 1. Prettier output tables
+1. Turn Shiny app into an R package like structure
 
 # Bugs
 

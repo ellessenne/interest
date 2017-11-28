@@ -1,5 +1,5 @@
 ## ui.R script ##
-source("helpers.R")
+source("global.R")
 
 header <- dashboardHeader(title = "SiReX")
 
@@ -85,7 +85,49 @@ body <- dashboardBody(
 											 downloadButton(outputId = "exportSummaryStatisticsButton",
 											 							 label = "Export",
 											 							 icon = icon("download"))))),
-		tabItem(tabName = "plotsTab")
+		tabItem(tabName = "plotsTab",
+						shinydashboard::box(
+							width = 2,
+							solidHeader = TRUE,
+							p("Define facets:"),
+							uiOutput(outputId = "plotFacetX"),
+							uiOutput(outputId = "plotFacetY"),
+							p("Customise plot:"),
+							shiny::textInput(inputId = "customXlab", label = "X-axis label:"),
+							shiny::textInput(inputId = "customYlab", label = "Y-axis label:"),
+							numericInput("plotWidth", "Plot width:", value = 6, min = 1, max = 50),
+							numericInput("plotHeight", "Plot height:", value = 6, min = 1, max = 50),
+							numericInput("plotResolution", "Plot resolution (in DPI):", value = 150, min = 72, max = 320),
+							radioButtons("plotFormat", label = "Format", choices = c("png", "pdf"), selected = "png")),
+						shinydashboard::tabBox(
+							width = 10,
+							shiny::tabPanel("Plot estimates",
+															shiny::radioButtons(inputId = "selectPlotEstimates",
+																									label = "Select plot type:",
+																									choices = c("Point estimates vs SEs" = "b_vs_se"),
+																									inline = TRUE),
+															shiny::plotOutput(outputId = "outPlotEstimates", width = "100%"),
+															shiny::verbatimTextOutput(outputId = "outPlotEstimatesCode")),
+							shiny::tabPanel("Plot summary statistics",
+															shiny::radioButtons(inputId = "selectSumm",
+																									label = "Select summary statistic:",
+																									choices = c("Convergence N" = "convergence_n",
+																															"Convergence %" = "convergence_p",
+																															"Bias" = "bias",
+																															"Percentage bias" = "pbias",
+																															"Empirical SD" = "esd",
+																															"Coverage" = "cov",
+																															"Mean squared error" = "mse"),
+																									inline = TRUE),
+															shiny::radioButtons(inputId = "selectPlotSummary",
+																									label = "Select plot type:",
+																									choices = c("Barplot" = "barplot",
+																															"Lollyplot" = "lollyplot"),
+																									inline = TRUE),
+															shiny::plotOutput(outputId = "outPlotSummary", width = "100%"),
+															shiny::verbatimTextOutput(outputId = "outPlotSummaryCode"))
+							)
+		)
 	)
 )
 

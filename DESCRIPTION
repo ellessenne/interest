@@ -1,0 +1,21 @@
+Package: poussin
+Version: 0.0.0.9000
+Date: 2017-11-27
+Title: Explore results from simulation studies interactively
+Description: POUSSIN is an interactive web app developed using shinyThis package is a port of the user-written command simsum in Stata.
+Authors@R: c(person("Alessandro", "Gasparini", role = c("aut", "cre"), email = "ag475@leicester.ac.uk"))
+License: GPL (>= 3)
+Imports:
+ shiny,
+ shinydashboard
+Suggests:
+ knitr,
+ testthat,
+ covr
+URL: https://github.com/ellessenne/poussin
+BugReports: https://github.com/ellessenne/poussin/issues
+VignetteBuilder: knitr
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.0.1
+Encoding: UTF-8
+LazyData: true
