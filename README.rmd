@@ -21,3 +21,6 @@ POUSSIN, acronym for _Probe OUtput of Simulation Study INteractively_, is an int
 
 # Launch application
 
+# Workflow
+
+<img src="README_figs/sirex-workflow.png" width="500" style="display: block; margin: auto;" />

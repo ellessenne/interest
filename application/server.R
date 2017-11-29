@@ -34,34 +34,24 @@ function(input, output, session) {
 		return(df)
 	})
 
-	# Make variable selectors
-	output$defineVariables = shiny::renderUI({
-		shiny::validate(shiny::need(!is.null(data()), "Upload a dataset first."))
-		tagList(
-			div(style = "display: inline-block; vertical-align: top; width: 19%; min-width: 150px",
-					shiny::selectInput(inputId = "defineEstvarname",
-														 label = "Point estimates:",
-														 choices = names(data()))),
-			div(style = "display: inline-block; vertical-align: top; width: 19%; min-width: 150px",
-					shiny::selectInput(inputId = "defineSe",
-														 label = "Standard errors:",
-														 choices = names(data()))),
-			div(style = "display: inline-block; vertical-align: top; width: 19%; min-width: 150px",
-					shiny::numericInput(inputId = "defineTrue",
-															label = "True value:",
-															value = 0)),
-			div(style = "display: inline-block; vertical-align: top; width: 19%; min-width: 150px",
-					shiny::selectInput(inputId = "defineMethod",
-														 label = "Methods:",
-														 choices = names(data()),
-														 multiple = TRUE)),
-			div(style = "display: inline-block; vertical-align: top; width: 19%; min-width: 150px",
-					shiny::selectInput(inputId = "defineBy",
-														 label = "By factors:",
-														 choices = names(data()),
-														 multiple = TRUE))
-		)
+	# Insert values in variables seletors
+	shiny::observe({
+		shiny::req(data())
+		shiny::updateSelectInput(session, inputId = "defineEstvarname", choices = names(data()))
+		shiny::updateSelectInput(session, inputId = "defineSe", choices = names(data()))
+		shiny::updateSelectInput(session, inputId = "defineMethod", choices = c("", names(data())))
+		shiny::updateSelectInput(session, inputId = "defineBy", choices = names(data()))
 	})
+
+	# Detect methods if method is specified
+	shiny::observe({
+		shiny::req(input$defineMethod)
+		shiny::updateSelectInput(session, "defineRefMethod", choices = unique(data()[[input$defineMethod]]))
+	})
+
+	output$Method = shiny::renderText(paste("Method:", input$defineMethod, "- is.null:", is.null(input$defineMethod), "- =''", input$defineMethod == "", "-is.na:", is.na(input$defineMethod)))
+	output$RefMethod = shiny::renderText(paste("RefMethod:", input$defineRefMethod, "- is.null:", is.null(input$defineRefMethod), "- =''", input$defineRefMethod == "", "-is.na:", is.na(input$defineRefMethod)))
+	output$By = shiny::renderText(paste("By:", input$defineBy, "- is.null:", is.null(input$defineBy), "- =''", input$defineBy == "", "-is.na:", is.na(input$defineBy)))
 
 	# Make a data table with the original dataset
 	output$uploadedDataTable = shiny::renderDataTable({
@@ -69,31 +59,48 @@ function(input, output, session) {
 		data()
 	})
 
-	# Make a reference method selector for the summary statistics table
-	output$summaryRefMethodSelector = shiny::renderUI({
-		if (length(input$defineMethod) > 0) shiny::selectInput(inputId = "summaryRefMethodSelector",
-																													 label = "Select reference method:",
-																													 choices = unique(data()[[input$defineMethod[1]]]))
-	})
-
 	# Make summary statistics
 	summ = shiny::reactive({
-		s = rsimsum::simsum(data = data(),
-							 estvarname = input$defineEstvarname,
-							 true = input$defineTrue,
-							 se = input$defineSe,
-							 methodvar = input$defineMethod[1],
-							 ref = input$summaryRefMethodSelector)
-		return(s)
+		shiny::req(data())
+		if (input$defineMethod != "" & !is.null(input$defineBy)) {
+			s = rsimsum::simsum(data = data(),
+													estvarname = input$defineEstvarname,
+													true = input$defineTrue,
+													se = input$defineSe,
+													methodvar = input$defineMethod,
+													ref = input$defineRefMethod,
+													by = input$defineBy)
+		} else if (input$defineMethod != "" & is.null(input$defineBy)) {
+			s = rsimsum::simsum(data = data(),
+													estvarname = input$defineEstvarname,
+													true = input$defineTrue,
+													se = input$defineSe,
+													methodvar = input$defineMethod,
+													ref = input$defineRefMethod)
+		} else if (input$defineMethod == "" & !is.null(input$defineBy)) {
+			s = rsimsum::simsum(data = data(),
+													estvarname = input$defineEstvarname,
+													true = input$defineTrue,
+													se = input$defineSe,
+													by = input$defineBy)
+		} else {
+			s = rsimsum::simsum(data = data(),
+													estvarname = input$defineEstvarname,
+													true = input$defineTrue,
+													se = input$defineSe)
+		}
+		return(summary(s))
 	})
 
 	# Make a data table with the summary statistics
 	output$summaryStatisticsDataTable = shiny::renderDataTable({
+		shiny::req(data())
 		summ()$summ
 	})
 
 	# Make summary table in LaTeX
 	output$summaryStatisticsLaTeX = shiny::renderPrint({
+		shiny::req(data())
 		print(xtable::xtable(x = summ()$summ, caption = input$summaryStatisticsLaTeXCaption, digits = input$summaryStatisticsLaTeXDigits))
 	})
 
@@ -126,31 +133,27 @@ function(input, output, session) {
 		}
 	)
 
-	# Make facets selectors
-	output$plotFacetX = shiny::renderUI({
-		shiny::validate(shiny::need(!is.null(data()), "Upload a dataset first, using the 'data' tab."))
-		shiny::selectInput(inputId = "plotFacetX",
-											 label = "Select X-axis faceting variable:",
-											 choices = names(data())[names(data()) %in% c(input$defineMethod, input$defineBy)],
-											 multiple = TRUE)
-	})
-	output$plotFacetY = shiny::renderUI({
-		shiny::validate(shiny::need(!is.null(data()), "Upload a dataset first, using the 'data' tab."))
-		shiny::selectInput(inputId = "plotFacetY",
-											 label = "Select Y-axis faceting variable:",
-											 choices = names(data())[names(data()) %in% c(input$defineMethod, input$defineBy)],
-											 multiple = TRUE)
+	# Update names in facets selectors
+	observe({
+		shiny::req(data())
+		shiny::updateSelectInput(session,
+														 inputId = "plotFacetX",
+														 choices = names(data())[names(data()) %in% c(input$defineMethod, input$defineBy)])
+		shiny::updateSelectInput(session,
+														 inputId = "plotFacetY",
+														 choices = names(data())[names(data()) %in% c(input$defineMethod, input$defineBy)])
 	})
 
 
 	# Make estimates plot
 	makePlotEstimates = function() {
+		shiny::req(data())
 		switch(input$selectPlotEstimates,
 					 "b_vs_se" =  {
-					 	plot = ggplot(data(), aes_string(x = input$defineSe, y = input$defineEstvarname)) +
-					 		geom_point() +
-					 		theme_bw() +
-					 		labs(x = input$customXlab, y = input$customYlab)
+					 	plot = ggplot2::ggplot(data(), ggplot2::aes_string(x = input$defineSe, y = input$defineEstvarname)) +
+					 		ggplot2::geom_point() +
+					 		ggplot2::theme_bw() +
+					 		ggplot2::labs(x = input$customXlab, y = input$customYlab)
 					 	# if (!is.null(input$plotFacetX) & !is.null(input$plotFacetY)) {
 					 	# 	plot = plot + facet_grid(reformulate(input$plotFacetX, input$plotFacetY), labeller = label_both)
 					 	# } else if (is.null(input$plotFacetX) & !is.null(input$plotFacetY)) {
@@ -163,59 +166,46 @@ function(input, output, session) {
 	}
 
 	# Print estimates plot
-	output$outPlotEstimates = renderPlot({
+	output$outPlotEstimates = shiny::renderPlot({
 		makePlotEstimates()
 	})
 
 	# Make summaries plot
-
 	makePlotSummary = function() {
-
-		df = out() %>%
-			rename(yy = !!input$select_sstat)
-
-		if (input$select_sstat %in% c("bias", "cov")) {
-			df = rename(df, yy_mcse = !!(paste0(input$select_sstat, "_mcse")))
-		}
-
-		switch(input$select_plot,
+		switch(input$selectPlotSummary,
 					 "barplot" = {
-					 	plot = ggplot(df, aes(x = method, y = yy)) +
-					 		geom_bar(stat = "identity") +
-					 		theme_bw() +
-					 		theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
-					 		labs(x = input$custom_xlab, y = input$custom_ylab)
-					 	if (input$select_sstat %in% c("bias", "cov")) {
-					 		plot = plot +
-					 			geom_errorbar(aes(ymin = yy - 1.96 * yy_mcse, ymax = yy + 1.96 * yy_mcse), width = 1/3)
-					 	}
+					 	plot = ggplot2::ggplot(summ()$summ[summ()$summ$stat == input$selectPlotSummaryStat,], ggplot2::aes_string(x = input$defineMethod, y = "coef")) +
+					 		ggplot2::geom_bar(stat = "identity") +
+					 		ggplot2::theme_bw() +
+					 		ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+					 		ggplot2::labs(x = input$customXlab, y = input$customYlab) +
+					 		ggplot2::geom_errorbar(ggplot2::aes_string(ymin = "lower", ymax = "upper"), width = 1/3)
 					 	plot
 					 },
 					 "lollyplot" = {
-					 	plot = ggplot(df, aes(y = method, x = yy)) +
-					 		geom_vline(xintercept = case_when(input$select_sstat == "convergence_n" ~ 1000,
-					 																			input$select_sstat == "convergence_p" ~ 1,
-					 																			input$select_sstat %in% c("bias", "pbias", "esd", "mse") ~ 0,
-					 																			input$select_sstat == "cov" ~ 95),
-					 							 color = "red", lty = "dotted") +
-					 		geom_segment(aes(yend = method,
-					 										 xend = case_when(input$select_sstat == "convergence_n" ~ 1000,
-					 										 								 input$select_sstat == "convergence_p" ~ 1,
-					 										 								 input$select_sstat %in% c("bias", "pbias", "esd", "mse") ~ 0,
-					 										 								 input$select_sstat == "cov" ~ 95)), color = "grey50") +
-					 		geom_point() +
-					 		theme_bw() +
-					 		labs(x = input$custom_xlab, y = input$custom_ylab)
-					 	if (input$select_sstat %in% c("bias", "cov")) {
-					 		plot = plot +
-					 			geom_point(aes(x = yy - 1.96 * yy_mcse), shape = "(") +
-					 			geom_point(aes(x = yy + 1.96 * yy_mcse), shape = ")")
-					 	}
-					 	plot
+					 	plot = ggplot2::ggplot(summ()$summ[summ()$summ$stat == input$selectPlotSummaryStat,], ggplot2::aes_string(y = input$defineMethod, x = "coef")) +
+					 		ggplot2::geom_vline(xintercept = dplyr::case_when(input$selectPlotSummaryStat %in% c("bias", "esd", "mse", "relprec", "modelse", "relerror") ~ 0,
+					 																											input$selectPlotSummaryStat %in% c("cover", "power") ~ summ()$level * 100),
+					 												color = "red",
+					 												lty = "dotted") +
+					 		ggplot2::geom_segment(ggplot2::aes_string(yend = input$defineMethod,
+					 																							xend = dplyr::case_when(input$selectPlotSummaryStat %in% c("bias", "esd", "mse", "relprec", "modelse", "relerror") ~ 0,
+					 																																			input$selectPlotSummaryStat %in% c("cover", "power") ~ summ()$level * 100)),
+					 																							color = "grey50") +
+					 														ggplot2::geom_point() +
+					 														ggplot2::theme_bw() +
+					 														ggplot2::labs(x = input$customXlab, y = input$customYlab) +
+					 														ggplot2::geom_point(ggplot2::aes_string(x = "lower"), shape = "(") +
+					 														ggplot2::geom_point(ggplot2::aes_string(x = "upper"), shape = ")")
+					 													plot
 					 })
 	}
-	#
-	#
+
+	# Print summaries plot
+	output$outPlotSummary = shiny::renderPlot({
+		makePlotSummary()
+	})
+
 	# output$download_plot <- downloadHandler(
 	# 	filename = function() { paste0("plot.", input$plot_format) },
 	# 	content = function(file) {

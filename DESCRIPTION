@@ -1,6 +1,6 @@
 Package: poussin
 Version: 0.0.0.9000
-Date: 2017-11-27
+Date: 2017-11-29
 Title: Explore results from simulation studies interactively
 Description: POUSSIN is an interactive web app developed using shinyThis package is a port of the user-written command simsum in Stata.
 Authors@R: c(person("Alessandro", "Gasparini", role = c("aut", "cre"), email = "ag475@leicester.ac.uk"))
