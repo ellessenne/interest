@@ -1,5 +1,5 @@
 ---
-title: "POUSSIN"
+title: "INTEREST"
 author: "Alessandro Gasparini"
 date: "`r format(Sys.Date())`"
 output:
@@ -13,14 +13,10 @@ output:
 knitr::opts_chunk$set(collapse = TRUE, comment = "##", fig.retina = 2, fig.path = "README_figs/")
 ```
 
-POUSSIN, acronym for _Probe OUtput of Simulation Study INteractively_, is an interactive web app developed using R and [`shiny`](https://shiny.rstudio.com/). It allows exploring results from simulation studies interactively.
-
-<img src="README_figs/poussin.jpg" width="250" style="display: block; margin: auto;" />
+INTEREST, acronym for **IN**teractive **T**ool for **E**xploring **RE**sults from **S**imulation s**T**udies, is an interactive web app developed using R and [`shiny`](https://shiny.rstudio.com/). It allows exploring results from simulation studies interactively.
 
 # Installation
 
 # Launch application
 
 # Workflow
-
-<img src="README_figs/sirex-workflow.png" width="500" style="display: block; margin: auto;" />

@@ -1,7 +1,7 @@
 ## ui.R script ##
 source("global.R")
 
-header <- shinydashboard::dashboardHeader(title = "SiReX")
+header <- shinydashboard::dashboardHeader(title = "INTEREST")
 
 sidebar <- shinydashboard::dashboardSidebar(
 	shinydashboard::sidebarMenu(

@@ -1,8 +1,10 @@
-Package: poussin
+Package: interest
 Version: 0.0.0.9000
-Date: 2017-11-29
-Title: Explore results from simulation studies interactively
-Description: POUSSIN is an interactive web app developed using shinyThis package is a port of the user-written command simsum in Stata.
+Date: 2017-12-04
+Title: Interactively explore results from simulation studies
+Description: INTEREST, acronym for INteractive Tool for Exploring REsults from Simulation sTudies, 
+    is an interactive web app developed using R and shiny. It allows exploring results from simulation 
+    studies interactively.
 Authors@R: c(person("Alessandro", "Gasparini", role = c("aut", "cre"), email = "ag475@leicester.ac.uk"))
 License: GPL (>= 3)
 Imports:
@@ -15,8 +17,8 @@ Suggests:
  knitr,
  testthat,
  covr
-URL: https://github.com/ellessenne/poussin
-BugReports: https://github.com/ellessenne/poussin/issues
+URL: https://github.com/ellessenne/interest
+BugReports: https://github.com/ellessenne/interest/issues
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.0.1
