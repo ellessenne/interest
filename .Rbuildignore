@@ -1,2 +1,9 @@
-^.*\.Rproj$
+.gitignore
+pdf
+NEWS.md
+TODO.md
+README.rmd
+README_figs/*
 ^\.Rproj\.user$
+^.*\.Rproj$
+^\.travis\.yml$
