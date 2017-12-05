@@ -187,6 +187,7 @@ body = shinydashboard::dashboardBody(
 			tabName = "summaryStatisticsTab",
 			shiny::fluidRow(
 				shinydashboard::box(
+					title = "Customise tables",
 					width = 3,
 					solidHeader = TRUE,
 					shiny::selectInput(
@@ -236,8 +237,8 @@ body = shinydashboard::dashboardBody(
 						round = TRUE
 					),
 					shiny::checkboxInput(
-						inputId = "summasyStatisticsIncludeMCSE",
-						label = "Include Monte Carlo Standard Errors?",
+						inputId = "summaryStatisticsIncludeMCSE",
+						label = "Include Monte Carlo Standard Errors",
 						value = TRUE
 					)
 				),
@@ -271,7 +272,7 @@ body = shinydashboard::dashboardBody(
 						),
 						shiny::checkboxInput(
 							inputId = "exportSummaryStatisticsTidy",
-							label = "Export a tidy dataset?",
+							label = "Export a tidy dataset",
 							value = TRUE
 						),
 						shiny::textInput(
@@ -290,93 +291,95 @@ body = shinydashboard::dashboardBody(
 		),
 		shinydashboard::tabItem(
 			tabName = "plotsTab",
-			shinydashboard::box(
-				width = 3,
-				solidHeader = TRUE,
-				shiny::p("Define facets:"),
-				shiny::selectInput(
-					inputId = "plotFacetX",
-					label = "Select X-axis faceting variable:",
-					choices = "",
-					multiple = TRUE
-				),
-				shiny::selectInput(
-					inputId = "plotFacetY",
-					label = "Select Y-axis faceting variable:",
-					choices = "",
-					multiple = TRUE
-				),
-				shiny::p("Customise plot:"),
-				shiny::textInput(inputId = "customXlab", label = "X-axis label:"),
-				shiny::textInput(inputId = "customYlab", label = "Y-axis label:"),
-				shiny::numericInput(
-					inputId = "plotWidth",
-					"Plot width:",
-					value = 6,
-					min = 1,
-					max = 50
-				),
-				shiny::numericInput(
-					inputId = "plotHeight",
-					"Plot height:",
-					value = 6,
-					min = 1,
-					max = 50
-				),
-				shiny::numericInput(
-					inputId = "plotResolution",
-					"Plot resolution (in DPI):",
-					value = 150,
-					min = 72,
-					max = 320
-				),
-				shiny::radioButtons(
-					inputId = "plotFormat",
-					label = "Format:",
-					choices = c("png", "pdf"),
-					selected = "png"
-				),
-				shiny::downloadButton(
-					outputId = "exportPlot",
-					label = "Save plot",
-					icon = shiny::icon("download")
-				)
-			),
-			shinydashboard::tabBox(
-				id = "tabPlots",
-				width = 9,
-				shiny::tabPanel(
-					"Plot estimates",
-					shiny::radioButtons(
-						inputId = "selectPlotEstimates",
-						label = "Select plot type:",
-						choices = c("Point estimates vs SEs" = "b_vs_se"),
-						inline = TRUE
+			shiny::fluidRow(
+				shinydashboard::box(
+					title = "Customise plots",
+					width = 3,
+					solidHeader = TRUE,
+					# shiny::p("Define facets:"),
+					# shiny::selectInput(
+					# 	inputId = "plotFacetX",
+					# 	label = "Select X-axis faceting variable:",
+					# 	choices = "",
+					# 	multiple = TRUE
+					# ),
+					# shiny::selectInput(
+					# 	inputId = "plotFacetY",
+					# 	label = "Select Y-axis faceting variable:",
+					# 	choices = "",
+					# 	multiple = TRUE
+					# ),
+					shiny::textInput(inputId = "customXlab", label = "X-axis label:"),
+					shiny::textInput(inputId = "customYlab", label = "Y-axis label:"),
+					shiny::numericInput(
+						inputId = "plotWidth",
+						"Plot width:",
+						value = 6,
+						min = 1,
+						max = 50
 					),
-					shiny::plotOutput(outputId = "outPlotEstimates", width = "100%"),
-					shiny::verbatimTextOutput(outputId = "outPlotEstimatesCode")
-				),
-				shiny::tabPanel(
-					"Plot summary statistics",
+					shiny::numericInput(
+						inputId = "plotHeight",
+						"Plot height:",
+						value = 6,
+						min = 1,
+						max = 50
+					),
+					shiny::numericInput(
+						inputId = "plotResolution",
+						"Plot resolution (in DPI):",
+						value = 150,
+						min = 72,
+						max = 320
+					),
+					shiny::radioButtons(
+						inputId = "plotFormat",
+						label = "Format:",
+						choices = c("png", "pdf"),
+						selected = "png"
+					),
 					div(
-						style = "display: inline-block; vertical-align:top; margin: 0 auto;",
+						style = "display: inline-block; margin: 0 auto; text-align: center;",
+						shiny::downloadButton(
+							outputId = "exportPlot",
+							label = "Save plot",
+							icon = shiny::icon("download")
+						)
+					)
+				),
+				shinydashboard::tabBox(
+					id = "tabPlots",
+					width = 9,
+					shiny::tabPanel(
+						"Plot estimates",
+						shiny::radioButtons(
+							inputId = "selectPlotEstimates",
+							label = "Select plot type:",
+							choices = c("Point estimates vs SEs" = "b_vs_se"),
+							inline = TRUE
+						),
+						shiny::plotOutput(outputId = "outPlotEstimates", width = "100%"),
+						shiny::verbatimTextOutput(outputId = "outPlotEstimatesCode")
+					),
+					shiny::tabPanel(
+						"Plot summary statistics",
 						shiny::selectInput(
 							inputId = "selectPlotSummaryStat",
 							label = "Select summary statistic:",
 							choices = ""
-						)
-					),
-					div(
-						style = "display: inline-block; vertical-align:top; margin: 0 auto;",
-						shiny::selectInput(
-							inputId = "selectPlotSummary",
-							label = "Select plot type:",
-							choices = c("Barplot" = "barplot",
-													"Lollyplot" = "lollyplot")
-						)
-					),
-					shiny::plotOutput(outputId = "outPlotSummary", width = "100%"),
-					shiny::verbatimTextOutput(outputId = "outPlotSummaryCode")
+						),
+						div(
+							style = "display: inline-block; vertical-align:top; margin: 0 auto;",
+							shiny::selectInput(
+								inputId = "selectPlotSummary",
+								label = "Select plot type:",
+								choices = c("Barplot" = "barplot",
+														"Lollyplot" = "lollyplot")
+							)
+						),
+						shiny::plotOutput(outputId = "outPlotSummary", width = "100%"),
+						shiny::verbatimTextOutput(outputId = "outPlotSummaryCode")
+					)
 				)
 			)
 		),

@@ -128,7 +128,7 @@ function(input, output, session) {
 	prettySumm = shiny::reactive({
 		shiny::req(data())
 		s = summ()$summ
-		if (input$summasyStatisticsIncludeMCSE) {
+		if (input$summaryStatisticsIncludeMCSE) {
 			s$value = paste0(sprintf(
 				paste0("%.", input$summaryStatisticsSigDigits, "f"),
 				s$coef
@@ -148,18 +148,21 @@ function(input, output, session) {
 		s$lower = NULL
 		s$upper = NULL
 		if (input$defineMethod != "" & !is.null(input$defineBy)) {
-			s
+			# s
 		} else if (input$defineMethod != "" & is.null(input$defineBy)) {
-			tidyr::spread(
+			s = tidyr::spread(
 				data = s,
 				key = !!input$defineMethod,
 				value = value
 			)
 		} else if (input$defineMethod == "" & !is.null(input$defineBy)) {
-			s
+			# s
 		} else {
-			s
+			# s
 		}
+		s$stat = factor(s$stat, levels = c("bsims", "sesims", "bmean", "bmedian", "semean", "semedian", "bias", "esd", "mse", "relprec", "modelse", "relerror", "cover", "power"), labels = c("Non-missing point estimates", "Non-missing standard errors", "Average point estimate", "Median point estimate", "Average standard error", "Median standard error", "Bias in point estimate", "Empirical standard error", "Mean squared error", "% gain in precision relative to reference method", "Model-based standard error", "Relative % error in standard error", "Coverage of nominal 95% confidence interval", "Power of 5% level test"))
+		s = dplyr::arrange(s, stat)
+		return(s)
 	})
 
 	# Make a data table with the summary statistics
@@ -177,7 +180,8 @@ function(input, output, session) {
 				x = s,
 				caption = input$summaryStatisticsLaTeXCaption,
 				digits = input$summaryStatisticsSigDigits
-			)
+			),
+			include.rownames = FALSE
 		)
 	})
 

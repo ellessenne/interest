@@ -2,7 +2,6 @@
 
 ## Small stuff
 
-1. Prettier output tables
 1. Prettier plots
 1. Tables "by" factors
 
