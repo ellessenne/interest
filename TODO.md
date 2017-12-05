@@ -2,11 +2,9 @@
 
 ## Small stuff
 
-1. Implement tables of summary values:
-    * Show only a subset of summary values
 1. Prettier output tables
 1. Prettier plots
-1. Download button for plots
+1. Tables "by" factors
 
 ## Big stuff
 
@@ -16,4 +14,6 @@
 
 # Bugs
 
-* Getting `Error: $ operator is invalid for atomic vectors` in the _Define variables:_ area when trying to link/paste files
+# Document
+
+* Example of R, Stata code to generate a dataset in proper format
