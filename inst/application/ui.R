@@ -163,14 +163,14 @@ body = shinydashboard::dashboardBody(
 				)
 			)
 		),
-		shinydashboard::tabItem(
-			tabName = "viewDataTab",
-			shinydashboard::box(
-				width = 12,
-				solidHeader = TRUE,
-				shiny::dataTableOutput(outputId = "uploadedDataTable")
-			)
-		),
+		shinydashboard::tabItem(tabName = "viewDataTab",
+														shiny::fluidRow(
+															shinydashboard::box(
+																width = 12,
+																solidHeader = TRUE,
+																shiny::dataTableOutput(outputId = "uploadedDataTable")
+															)
+														)),
 		shinydashboard::tabItem(
 			tabName = "summaryStatisticsTab",
 			shinydashboard::box(

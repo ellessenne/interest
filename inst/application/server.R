@@ -41,7 +41,9 @@ function(input, output, session) {
 					".dta" = haven::read_dta(input$linkData),
 					".sav" = haven::read_sav(input$linkData),
 					".sas7bdat" = haven::read_sas(input$linkData),
-					".rds" = readRDS(file = gzcon(url(input$linkData)))
+					".rds" = readRDS(file = gzcon(url(
+						input$linkData
+					)))
 				)
 				return(df)
 			},
@@ -77,7 +79,7 @@ function(input, output, session) {
 			"Upload a dataset first, using the 'data' tab."
 		))
 		data()
-	})
+	}, options = list(pageLength = 10))
 
 	# Make summary statistics
 	summ = shiny::reactive({
@@ -118,7 +120,7 @@ function(input, output, session) {
 			)
 		}
 		s = summary(s)
-		s$summ = s$summ[s$summ$stat %in% input$summaryStatisticsWhich, ]
+		s$summ = s$summ[s$summ$stat %in% input$summaryStatisticsWhich,]
 		return(s)
 	})
 
@@ -270,7 +272,7 @@ function(input, output, session) {
 		)
 		switch(input$selectPlotSummary,
 					 "barplot" = {
-					 	plot = ggplot2::ggplot(summ()$summ[summ()$summ$stat == input$selectPlotSummaryStat, ],
+					 	plot = ggplot2::ggplot(summ()$summ[summ()$summ$stat == input$selectPlotSummaryStat,],
 					 												 ggplot2::aes_string(x = input$defineMethod, y = "coef")) +
 					 		ggplot2::geom_bar(stat = "identity") +
 					 		ggplot2::theme_bw() +
@@ -285,7 +287,7 @@ function(input, output, session) {
 					 	plot
 					 },
 					 "lollyplot" = {
-					 	plot = ggplot2::ggplot(summ()$summ[summ()$summ$stat == input$selectPlotSummaryStat, ],
+					 	plot = ggplot2::ggplot(summ()$summ[summ()$summ$stat == input$selectPlotSummaryStat,],
 					 												 ggplot2::aes_string(y = input$defineMethod, x = "coef")) +
 					 		ggplot2::geom_vline(
 					 			xintercept = dplyr::case_when(
