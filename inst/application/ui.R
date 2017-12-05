@@ -31,6 +31,11 @@ sidebar = shinydashboard::dashboardSidebar(
 			icon = shiny::icon("bar-chart")
 		),
 		shinydashboard::menuItem(
+			"Technical details",
+			tabName = "technicalDetailsTab",
+			icon = shiny::icon("book")
+		),
+		shinydashboard::menuItem(
 			"Feedback and comments",
 			href = "mailto:ag475@leicester.ac.uk?Subject=Feedback%20and%20comments%20for%20INTEREST",
 			icon = shiny::icon("commenting")
@@ -53,7 +58,14 @@ body = shinydashboard::dashboardBody(
 		shiny::tags$link(rel = "stylesheet", type = "text/css", href = "theme.css")
 	),
 	shinydashboard::tabItems(
-		shinydashboard::tabItem(tabName = "introductionTab"),
+		shinydashboard::tabItem(tabName = "introductionTab",
+														shiny::fluidRow(
+															shinydashboard::box(
+																title = "Introduction to INTEREST",
+																width = 12,
+																solidHeader = TRUE
+															)
+														)),
 		shinydashboard::tabItem(
 			tabName = "dataTab",
 			shiny::fluidRow(
@@ -173,103 +185,105 @@ body = shinydashboard::dashboardBody(
 														)),
 		shinydashboard::tabItem(
 			tabName = "summaryStatisticsTab",
-			shinydashboard::box(
-				width = 3,
-				solidHeader = TRUE,
-				shiny::selectInput(
-					inputId = "summaryStatisticsWhich",
-					label = "Summary statistics of interest:",
-					choices = c(
-						"Non-missing point estimates" = "bsims",
-						"Non-missing standard errors" = "sesims",
-						"Average point estimate" = "bmean",
-						"Median point estimate" = "bmedian",
-						"Average standard error" = "semean",
-						"Median standard error" = "semedian",
-						"Bias in point estimate" = "bias",
-						"Empirical standard error" = "esd",
-						"Mean squared error" = "mse",
-						"% gain in precision relative to reference method" = "relprec",
-						"Model-based standard error" = "modelse",
-						"Relative % error in standard error" = "relerror",
-						"Coverage of nominal 95% confidence interval" = "cover",
-						"Power of 5% level test" = "power"
-					),
-					multiple = TRUE,
-					selected = c(
-						"bsims",
-						"sesims",
-						"bmean",
-						"bmedian",
-						"semean",
-						"semedian",
-						"bias",
-						"esd",
-						"mse",
-						"relprec",
-						"modelse",
-						"relerror",
-						"cover",
-						"power"
-					)
-				),
-				shiny::sliderInput(
-					inputId = "summaryStatisticsSigDigits",
-					label = "Number of significant digits:",
-					min = 0,
-					max = 10,
-					value = 4,
-					step = 1,
-					round = TRUE
-				),
-				shiny::checkboxInput(
-					inputId = "summasyStatisticsIncludeMCSE",
-					label = "Include Monte Carlo Standard Errors?",
-					value = TRUE
-				)
-			),
-			shinydashboard::tabBox(
-				width = 9,
-				shiny::tabPanel(
-					"View summary statistics",
-					shiny::dataTableOutput(outputId = "summaryStatisticsDataTable")
-				),
-				shiny::tabPanel(
-					"Export table",
-					shiny::textInput(inputId = "summaryStatisticsLaTeXCaption",
-													 label = "Table caption:"),
-					shiny::verbatimTextOutput(outputId = "summaryStatisticsLaTeX")
-				),
-				shiny::tabPanel(
-					"Export summary statistics",
-					shiny::radioButtons(
-						inputId = "exportSummaryStatisticsType",
-						label = "Format of the file to export:",
+			shiny::fluidRow(
+				shinydashboard::box(
+					width = 3,
+					solidHeader = TRUE,
+					shiny::selectInput(
+						inputId = "summaryStatisticsWhich",
+						label = "Summary statistics of interest:",
 						choices = c(
-							"Comma-separated" = "csv",
-							"Tab-separated" = "tsv",
-							"R" = "r",
-							"Stata" = "stata",
-							"SPSS" = "spss",
-							"SAS" = "sas"
+							"Non-missing point estimates" = "bsims",
+							"Non-missing standard errors" = "sesims",
+							"Average point estimate" = "bmean",
+							"Median point estimate" = "bmedian",
+							"Average standard error" = "semean",
+							"Median standard error" = "semedian",
+							"Bias in point estimate" = "bias",
+							"Empirical standard error" = "esd",
+							"Mean squared error" = "mse",
+							"% gain in precision relative to reference method" = "relprec",
+							"Model-based standard error" = "modelse",
+							"Relative % error in standard error" = "relerror",
+							"Coverage of nominal 95% confidence interval" = "cover",
+							"Power of 5% level test" = "power"
 						),
-						selected = "csv",
-						inline = TRUE
+						multiple = TRUE,
+						selected = c(
+							"bsims",
+							"sesims",
+							"bmean",
+							"bmedian",
+							"semean",
+							"semedian",
+							"bias",
+							"esd",
+							"mse",
+							"relprec",
+							"modelse",
+							"relerror",
+							"cover",
+							"power"
+						)
+					),
+					shiny::sliderInput(
+						inputId = "summaryStatisticsSigDigits",
+						label = "Number of significant digits:",
+						min = 0,
+						max = 10,
+						value = 4,
+						step = 1,
+						round = TRUE
 					),
 					shiny::checkboxInput(
-						inputId = "exportSummaryStatisticsTidy",
-						label = "Export a tidy dataset?",
+						inputId = "summasyStatisticsIncludeMCSE",
+						label = "Include Monte Carlo Standard Errors?",
 						value = TRUE
+					)
+				),
+				shinydashboard::tabBox(
+					width = 9,
+					shiny::tabPanel(
+						"View summary statistics",
+						shiny::dataTableOutput(outputId = "summaryStatisticsDataTable")
 					),
-					shiny::textInput(
-						inputId = "exportSummaryStatisticsName",
-						label = "Name the file to export:",
-						value = "summary_statistics"
+					shiny::tabPanel(
+						"Export table",
+						shiny::textInput(inputId = "summaryStatisticsLaTeXCaption",
+														 label = "Table caption:"),
+						shiny::verbatimTextOutput(outputId = "summaryStatisticsLaTeX")
 					),
-					shiny::downloadButton(
-						outputId = "exportSummaryStatisticsButton",
-						label = "Export",
-						icon = shiny::icon("download")
+					shiny::tabPanel(
+						"Export summary statistics",
+						shiny::radioButtons(
+							inputId = "exportSummaryStatisticsType",
+							label = "Format of the file to export:",
+							choices = c(
+								"Comma-separated" = "csv",
+								"Tab-separated" = "tsv",
+								"R" = "r",
+								"Stata" = "stata",
+								"SPSS" = "spss",
+								"SAS" = "sas"
+							),
+							selected = "csv",
+							inline = TRUE
+						),
+						shiny::checkboxInput(
+							inputId = "exportSummaryStatisticsTidy",
+							label = "Export a tidy dataset?",
+							value = TRUE
+						),
+						shiny::textInput(
+							inputId = "exportSummaryStatisticsName",
+							label = "Name the file to export:",
+							value = "summary_statistics"
+						),
+						shiny::downloadButton(
+							outputId = "exportSummaryStatisticsButton",
+							label = "Export",
+							icon = shiny::icon("download")
+						)
 					)
 				)
 			)
@@ -365,7 +379,16 @@ body = shinydashboard::dashboardBody(
 					shiny::verbatimTextOutput(outputId = "outPlotSummaryCode")
 				)
 			)
-		)
+		),
+		shinydashboard::tabItem(tabName = "technicalDetailsTab",
+														shiny::fluidRow(
+															shinydashboard::box(
+																title = "Technical details about INTEREST",
+																width = 12,
+																solidHeader = TRUE
+															)
+														))
+
 	)
 )
 
