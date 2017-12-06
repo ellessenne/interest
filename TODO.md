@@ -3,7 +3,6 @@
 ## Small stuff
 
 1. Prettier plots
-1. Tables "by" factors
 
 ## Big stuff
 

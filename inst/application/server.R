@@ -55,7 +55,7 @@ function(input, output, session) {
 		)
 	})
 
-	# Insert values in variables seletors
+	# Insert values in variables selectors
 	shiny::observe({
 		shiny::req(data())
 		shiny::updateSelectInput(session, inputId = "defineEstvarname", choices = names(data()))
@@ -70,6 +70,22 @@ function(input, output, session) {
 	shiny::observe({
 		shiny::req(input$defineMethod)
 		shiny::updateSelectInput(session, "defineRefMethod", choices = unique(data()[[input$defineMethod]]))
+	})
+
+	# Make DGM selectors if `by` is specified
+	output$summaryStatisticsSelectDGM = shiny::renderUI({
+		shiny::validate(
+			shiny::need(
+				!is.null(input$defineBy),
+				"DGM selectors not available when no `by` factors are specified."
+			)
+		)
+		lapply(input$defineBy, function(x)
+			shiny::selectInput(
+				inputId = x,
+				label = x,
+				choices = sort(unique(data()[[x]]))
+			))
 	})
 
 	# Make a data table with the original dataset
@@ -147,20 +163,59 @@ function(input, output, session) {
 		s$mcse = NULL
 		s$lower = NULL
 		s$upper = NULL
-		if (input$defineMethod != "" & !is.null(input$defineBy)) {
-			# s
-		} else if (input$defineMethod != "" & is.null(input$defineBy)) {
+		# Only selected DGM if `by` is specified
+		if (!is.null(input[["defineBy"]])) {
+			s = split(s, f = lapply(input$defineBy, function(f) s[[f]]))[[paste(sapply(input$defineBy, function(x) input[[x]]), collapse = ".")]]
+			for (i in input$defineBy) {
+				s[[i]] = NULL
+			}
+		}
+
+		# Spread over `method` if `method` is specified
+		if (input$defineMethod != "") {
 			s = tidyr::spread(
 				data = s,
 				key = !!input$defineMethod,
 				value = value
 			)
-		} else if (input$defineMethod == "" & !is.null(input$defineBy)) {
-			# s
-		} else {
-			# s
 		}
-		s$stat = factor(s$stat, levels = c("bsims", "sesims", "bmean", "bmedian", "semean", "semedian", "bias", "esd", "mse", "relprec", "modelse", "relerror", "cover", "power"), labels = c("Non-missing point estimates", "Non-missing standard errors", "Average point estimate", "Median point estimate", "Average standard error", "Median standard error", "Bias in point estimate", "Empirical standard error", "Mean squared error", "% gain in precision relative to reference method", "Model-based standard error", "Relative % error in standard error", "Coverage of nominal 95% confidence interval", "Power of 5% level test"))
+
+		# Factorise summary statistics
+		s$stat = factor(
+			s$stat,
+			levels = c(
+				"bsims",
+				"sesims",
+				"bmean",
+				"bmedian",
+				"semean",
+				"semedian",
+				"bias",
+				"esd",
+				"mse",
+				"relprec",
+				"modelse",
+				"relerror",
+				"cover",
+				"power"
+			),
+			labels = c(
+				"Non-missing point estimates",
+				"Non-missing standard errors",
+				"Average point estimate",
+				"Median point estimate",
+				"Average standard error",
+				"Median standard error",
+				"Bias in point estimate",
+				"Empirical standard error",
+				"Mean squared error",
+				"% gain in precision relative to reference method",
+				"Model-based standard error",
+				"Relative % error in standard error",
+				"Coverage of nominal 95% confidence interval",
+				"Power of 5% level test"
+			)
+		)
 		s = dplyr::arrange(s, stat)
 		return(s)
 	})
@@ -183,6 +238,13 @@ function(input, output, session) {
 			),
 			include.rownames = FALSE
 		)
+	})
+
+	# Update caption of LaTeX table with current `by` scenario, if specified
+	shiny::observe({
+		shiny::req(input$defineBy)
+		value = paste(sapply(input$defineBy, function(x) paste0(x, ": ", input[[x]])), collapse = ", ")
+		shiny::updateTextInput(session, "summaryStatisticsLaTeXCaption", value = value)
 	})
 
 	# Download data.frame with summary statistics
