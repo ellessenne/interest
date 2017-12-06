@@ -52,5 +52,5 @@ The workflow of INTERACT is simple:
 Further material on INTEREST
 ============================
 
--   Slides to present SiReX (former name of INTEREST) at the Students’ Day, 38<sup>th</sup> Annual Conference of the International Society for Clinical Biostatistics
--   Poster at the 2017 Annual Conference of the Department of Health Sciences, University of Leicester
+-   Slides to present SiReX (former name of INTEREST) at the Students’ Day, 38<sup>th</sup> Annual Conference of the International Society for Clinical Biostatistics [\[here\]](README_files/iscb38_slides.pdf)
+-   Poster at the 2017 Annual Conference of the Department of Health Sciences, University of Leicester [\[here\]](README_files/hs_poster.pdf)
