@@ -165,7 +165,9 @@ function(input, output, session) {
 		s$upper = NULL
 		# Only selected DGM if `by` is specified
 		if (!is.null(input[["defineBy"]])) {
-			s = split(s, f = lapply(input$defineBy, function(f) s[[f]]))[[paste(sapply(input$defineBy, function(x) input[[x]]), collapse = ".")]]
+			s = split(s, f = lapply(input$defineBy, function(f)
+				s[[f]]))[[paste(sapply(input$defineBy, function(x)
+					input[[x]]), collapse = ".")]]
 			for (i in input$defineBy) {
 				s[[i]] = NULL
 			}
@@ -243,7 +245,8 @@ function(input, output, session) {
 	# Update caption of LaTeX table with current `by` scenario, if specified
 	shiny::observe({
 		shiny::req(input$defineBy)
-		value = paste(sapply(input$defineBy, function(x) paste0(x, ": ", input[[x]])), collapse = ", ")
+		value = paste(sapply(input$defineBy, function(x)
+			paste0(x, ": ", input[[x]])), collapse = ", ")
 		shiny::updateTextInput(session, "summaryStatisticsLaTeXCaption", value = value)
 	})
 
@@ -389,7 +392,7 @@ function(input, output, session) {
 	})
 
 	# Download plot of current tab
-	output$exportPlot = shiny::downloadHandler(
+	output$exportPlotButton = shiny::downloadHandler(
 		filename = function() {
 			paste0("plot.", input$plotFormat)
 		},
@@ -410,4 +413,22 @@ function(input, output, session) {
 		}
 	)
 
+	# Make download buttons only when data() is loaded
+	observe({
+		shiny::req(data())
+		output$summaryStatisticsButton = shiny::renderUI(
+			shiny::downloadButton(
+				outputId = "exportSummaryStatisticsButton",
+				label = "Download summary statistics",
+				icon = shiny::icon("download")
+			)
+		)
+		output$plotButton = shiny::renderUI(
+			shiny::downloadButton(
+				outputId = "exportPlotButton",
+				label = "Save plot",
+				icon = shiny::icon("download")
+			)
+		)
+	})
 }

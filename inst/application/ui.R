@@ -54,6 +54,7 @@ sidebar = shinydashboard::dashboardSidebar(
 )
 
 body = shinydashboard::dashboardBody(
+	shinyjs::useShinyjs(),
 	shiny::tags$head(
 		shiny::tags$link(rel = "stylesheet", type = "text/css", href = "theme.css")
 	),
@@ -190,7 +191,8 @@ body = shinydashboard::dashboardBody(
 					width = 3,
 					shiny::tabPanel(
 						title = "Select DGM",
-						shiny::uiOutput(outputId = "summaryStatisticsSelectDGM")),
+						shiny::uiOutput(outputId = "summaryStatisticsSelectDGM")
+					),
 					shiny::tabPanel(
 						title = "Customise",
 						shiny::selectInput(
@@ -260,7 +262,13 @@ body = shinydashboard::dashboardBody(
 					),
 					shiny::tabPanel(
 						"Export summary statistics",
-						shiny::p("If you want to export the table as visualised in the", shiny::em("View summary statistics"), "tab, untick the", shiny::em("export tidy data"), "checkbox; otherwise, a tidy dataset with summary statistics for each method and each DGM is exported."),
+						shiny::p(
+							"If you want to export the table as visualised in the",
+							shiny::em("View summary statistics"),
+							"tab, untick the",
+							shiny::em("export tidy data"),
+							"checkbox; otherwise, a tidy dataset with summary statistics for each method and each DGM is exported."
+						),
 						shiny::textInput(
 							inputId = "exportSummaryStatisticsName",
 							label = "Name the file to export:",
@@ -285,11 +293,7 @@ body = shinydashboard::dashboardBody(
 							label = "Export tidy data",
 							value = TRUE
 						),
-						shiny::downloadButton(
-							outputId = "exportSummaryStatisticsButton",
-							label = "Download summary statistics",
-							icon = shiny::icon("download")
-						)
+						shiny::uiOutput(outputId = "summaryStatisticsButton")
 					)
 				)
 			)
@@ -316,14 +320,14 @@ body = shinydashboard::dashboardBody(
 					# ),
 					shiny::textInput(inputId = "customXlab", label = "X-axis label:"),
 					shiny::textInput(inputId = "customYlab", label = "Y-axis label:"),
-					shiny::numericInput(
+					shiny::sliderInput(
 						inputId = "plotWidth",
 						"Plot width:",
 						value = 6,
 						min = 1,
 						max = 50
 					),
-					shiny::numericInput(
+					shiny::sliderInput(
 						inputId = "plotHeight",
 						"Plot height:",
 						value = 6,
@@ -332,25 +336,28 @@ body = shinydashboard::dashboardBody(
 					),
 					shiny::numericInput(
 						inputId = "plotResolution",
-						"Plot resolution (in DPI):",
-						value = 150,
+						"Plot resolution (DPI):",
+						value = 320,
 						min = 72,
-						max = 320
+						max = 1200
 					),
-					shiny::radioButtons(
+					shiny::selectInput(
 						inputId = "plotFormat",
 						label = "Format:",
-						choices = c("png", "pdf"),
+						choices = c(
+							"eps",
+							"ps",
+							"tex (pictex)" = "tex",
+							"pdf",
+							"jpeg",
+							"tiff",
+							"png",
+							"bmp",
+							"svg"
+						),
 						selected = "png"
 					),
-					div(
-						style = "display: inline-block; margin: 0 auto; text-align: center;",
-						shiny::downloadButton(
-							outputId = "exportPlot",
-							label = "Save plot",
-							icon = shiny::icon("download")
-						)
-					)
+					shiny::uiOutput(outputId = "plotButton")
 				),
 				shinydashboard::tabBox(
 					id = "tabPlots",
@@ -367,20 +374,17 @@ body = shinydashboard::dashboardBody(
 						shiny::verbatimTextOutput(outputId = "outPlotEstimatesCode")
 					),
 					shiny::tabPanel(
-						"Plot summary statistics",
+						title = "Plot summary statistics",
 						shiny::selectInput(
 							inputId = "selectPlotSummaryStat",
 							label = "Select summary statistic:",
 							choices = ""
 						),
-						div(
-							style = "display: inline-block; vertical-align:top; margin: 0 auto;",
-							shiny::selectInput(
-								inputId = "selectPlotSummary",
-								label = "Select plot type:",
-								choices = c("Barplot" = "barplot",
-														"Lollyplot" = "lollyplot")
-							)
+						shiny::selectInput(
+							inputId = "selectPlotSummary",
+							label = "Select plot type:",
+							choices = c("Barplot" = "barplot",
+													"Lollyplot" = "lollyplot")
 						),
 						shiny::plotOutput(outputId = "outPlotSummary", width = "100%"),
 						shiny::verbatimTextOutput(outputId = "outPlotSummaryCode")
@@ -390,10 +394,11 @@ body = shinydashboard::dashboardBody(
 		),
 		shinydashboard::tabItem(tabName = "technicalDetailsTab",
 														shiny::fluidRow(
-															shinydashboard::box(
-																title = "Technical details about INTEREST",
-																width = 12,
-																solidHeader = TRUE
+															shinydashboard::tabBox(
+																id = "tabPlots",
+																width = 9,
+																shiny::tabPanel(title = "Summary statistics"),
+																shiny::tabPanel(title = "Monte Carlo SEs")
 															)
 														))
 
