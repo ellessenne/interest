@@ -1,6 +1,6 @@
 Package: interest
-Version: 0.0.0.9000
-Date: 2017-12-05
+Version: 0.0.1
+Date: 2017-12-06
 Title: Interactively explore results from simulation studies
 Description: INTEREST, acronym for INteractive Tool for Exploring REsults from Simulation sTudies, 
     is an interactive web app developed using R and shiny. It allows exploring results from simulation 
@@ -8,15 +8,19 @@ Description: INTEREST, acronym for INteractive Tool for Exploring REsults from S
 Authors@R: c(person("Alessandro", "Gasparini", role = c("aut", "cre"), email = "ag475@leicester.ac.uk"))
 License: GPL (>= 3)
 Imports:
+ cowplot,
  devtools,
- tidyverse,
+ dplyr,
+ ggplot2,
+ ggthemes,
+ haven,
+ readr,
  shiny,
  shinydashboard,
+ tidyr,
  xtable
 Suggests:
- knitr,
- testthat,
- covr
+ knitr
 URL: https://github.com/ellessenne/interest
 BugReports: https://github.com/ellessenne/interest/issues
 VignetteBuilder: knitr

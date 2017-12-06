@@ -16,5 +16,8 @@ Run the INTEREST interactive shiny app.
 interest
 }
 \examples{
+\dontrun{
+library(interest)
 interest()
+}
 }

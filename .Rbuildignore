@@ -1,9 +1,15 @@
 .gitignore
 pdf
+csv
+dta
+sav
+rds
+sas7bdat
 NEWS.md
 TODO.md
 README.rmd
-README_figs/*
+README_files/*
 ^\.Rproj\.user$
 ^.*\.Rproj$
 ^\.travis\.yml$
+^appveyor\.yml$
