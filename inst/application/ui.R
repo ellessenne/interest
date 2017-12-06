@@ -203,8 +203,8 @@ body = shinydashboard::dashboardBody(
 								"Non-missing standard errors" = "sesims",
 								"Average point estimate" = "bmean",
 								"Median point estimate" = "bmedian",
-								"Average standard error" = "semean",
-								"Median standard error" = "semedian",
+								"Average standard error" = "se2mean",
+								"Median standard error" = "se2median",
 								"Bias in point estimate" = "bias",
 								"Empirical standard error" = "esd",
 								"Mean squared error" = "mse",
@@ -220,8 +220,8 @@ body = shinydashboard::dashboardBody(
 								"sesims",
 								"bmean",
 								"bmedian",
-								"semean",
-								"semedian",
+								"se2mean",
+								"se2median",
 								"bias",
 								"esd",
 								"mse",
@@ -301,74 +301,118 @@ body = shinydashboard::dashboardBody(
 		shinydashboard::tabItem(
 			tabName = "plotsTab",
 			shiny::fluidRow(
-				shinydashboard::box(
-					title = "Customise plots",
+				shinydashboard::tabBox(
 					width = 3,
-					solidHeader = TRUE,
-					# shiny::p("Define facets:"),
-					# shiny::selectInput(
-					# 	inputId = "plotFacetX",
-					# 	label = "Select X-axis faceting variable:",
-					# 	choices = "",
-					# 	multiple = TRUE
-					# ),
-					# shiny::selectInput(
-					# 	inputId = "plotFacetY",
-					# 	label = "Select Y-axis faceting variable:",
-					# 	choices = "",
-					# 	multiple = TRUE
-					# ),
-					shiny::textInput(inputId = "customXlab", label = "X-axis label:"),
-					shiny::textInput(inputId = "customYlab", label = "Y-axis label:"),
-					shiny::sliderInput(
-						inputId = "plotWidth",
-						"Plot width:",
-						value = 6,
-						min = 1,
-						max = 50
-					),
-					shiny::sliderInput(
-						inputId = "plotHeight",
-						"Plot height:",
-						value = 6,
-						min = 1,
-						max = 50
-					),
-					shiny::numericInput(
-						inputId = "plotResolution",
-						"Plot resolution (DPI):",
-						value = 320,
-						min = 72,
-						max = 1200
-					),
-					shiny::selectInput(
-						inputId = "plotFormat",
-						label = "Format:",
-						choices = c(
-							"eps",
-							"ps",
-							"tex (pictex)" = "tex",
-							"pdf",
-							"jpeg",
-							"tiff",
-							"png",
-							"bmp",
-							"svg"
+					shiny::tabPanel(
+						title = "Select DGM / Facet",
+						shiny::radioButtons(
+							inputId = "selectOrFacet",
+							label = "Select DGM or facet?",
+							choices = c("None", "Select DGM", "Facet"),
+							selected = "None"
 						),
-						selected = "png"
+						shiny::conditionalPanel(condition = "input.selectOrFacet == 'Select DGM'",
+																		shiny::uiOutput(outputId = "plotSelectDGM")
+						),
+						shiny::conditionalPanel(condition = "input.selectOrFacet == 'Facet'",
+																		shiny::uiOutput(outputId = "plotFacet")
+						)
 					),
-					shiny::uiOutput(outputId = "plotButton")
+					shiny::tabPanel(
+						title = "Customise plots",
+						shiny::textInput(inputId = "customXlab", label = "X-axis label:"),
+						shiny::textInput(inputId = "customYlab", label = "Y-axis label:"),
+						shiny::selectInput(
+							inputId = "customTheme",
+							label = "Plot theme:",
+							choices = c(
+								"Base" = "theme_base",
+								"Black and white" = "theme_bw",
+								"Calc" = "theme_calc",
+								"Classic" = "theme_classic",
+								"Cowplot" = "theme_cowplot",
+								"Dark" = "theme_dark",
+								"Economist" = "theme_economist",
+								"Excel" = "theme_excel",
+								"Few" = "theme_few",
+								"Fivethirtyeight" = "theme_fivethirtyeight",
+								"Google docs" = "theme_gdocs",
+								"Grey" = "theme_grey",
+								"HC" = "theme_hc",
+								"iGray" = "theme_igray",
+								"Light" = "theme_light",
+								"Linedraw" = "theme_linedraw",
+								"Minimal" = "theme_minimal",
+								"Pander" = "theme_pander",
+								"Solarised" = "theme_solarized",
+								# "Stata (s2color)" = "theme_stata_s2color",
+								# "Stata (s2mono)" = "theme_stata_s2mono",
+								# "Stata (s1color)" = "theme_stata_s1color",
+								# "Stata (s1rcolor)" = "theme_stata_s1rcolor",
+								# "Stata (s1mono)" = "theme_stata_s1mono",
+								# "Stata (s2manual)" = "theme_stata_s2manual",
+								# "Stata (s1manual)" = "theme_stata_s1manual",
+								# "Stata (sj)" = "theme_stata_sj",
+								"Tufte" = "theme_tufte",
+								"WSJ" = "theme_wsj"
+							),
+							selected = "Black and white"
+						),
+						shiny::sliderInput(
+							inputId = "plotWidth",
+							"Plot width:",
+							value = 6,
+							min = 1,
+							max = 50
+						),
+						shiny::sliderInput(
+							inputId = "plotHeight",
+							"Plot height:",
+							value = 6,
+							min = 1,
+							max = 50
+						),
+						shiny::numericInput(
+							inputId = "plotResolution",
+							"Plot resolution (DPI):",
+							value = 320,
+							min = 72,
+							max = 1200
+						),
+						shiny::selectInput(
+							inputId = "plotFormat",
+							label = "Format:",
+							choices = c(
+								"eps",
+								"ps",
+								"tex (pictex)" = "tex",
+								"pdf",
+								"jpeg",
+								"tiff",
+								"png",
+								"bmp",
+								"svg"
+							),
+							selected = "png"
+						),
+						shiny::uiOutput(outputId = "plotButton")
+					)
 				),
 				shinydashboard::tabBox(
 					id = "tabPlots",
 					width = 9,
 					shiny::tabPanel(
 						"Plot estimates",
-						shiny::radioButtons(
+						shiny::selectInput(
 							inputId = "selectPlotEstimates",
 							label = "Select plot type:",
-							choices = c("Point estimates vs SEs" = "b_vs_se"),
-							inline = TRUE
+							choices = c("Point estimates vs SEs" = "b_vs_se")
+						),
+						shiny::selectInput(
+							inputId = "plotEstimatesColorMethodBy",
+							label = "Color:",
+							choices = c("None"),
+							selected = "none"
 						),
 						shiny::plotOutput(outputId = "outPlotEstimates", width = "100%"),
 						shiny::verbatimTextOutput(outputId = "outPlotEstimatesCode")
@@ -386,6 +430,11 @@ body = shinydashboard::dashboardBody(
 							choices = c("Barplot" = "barplot",
 													"Lollyplot" = "lollyplot")
 						),
+						shiny::checkboxInput(
+							inputId = "plotMCSEConfidenceIntervals",
+							label = "Plot confidence intervals based on Monte Carlo standard errors?",
+							value = TRUE
+						),
 						shiny::plotOutput(outputId = "outPlotSummary", width = "100%"),
 						shiny::verbatimTextOutput(outputId = "outPlotSummaryCode")
 					)
@@ -398,10 +447,106 @@ body = shinydashboard::dashboardBody(
 																id = "tabPlots",
 																width = 9,
 																shiny::tabPanel(title = "Summary statistics"),
-																shiny::tabPanel(title = "Monte Carlo SEs")
+																shiny::tabPanel(title = "Monte Carlo SEs"),
+																shiny::tabPanel(
+																	title = "Plot themes",
+																	shiny::p(
+																		"The following themes are available for customising the appearance of plots in INTEREST:"
+																	),
+																	shiny::tags$ul(
+																		shiny::tags$li(
+																			shiny::em("Base"),
+																			": theme similar to the default settings of the base R graphics;"
+																		),
+																		shiny::tags$li(
+																			shiny::em("Black and white"),
+																			": the classic dark-on-light ggplot2 theme. May work better for presentations displayed with a projector;"
+																		),
+																		shiny::tags$li(
+																			shiny::em("Calc"),
+																			": theme similar to the default settings of LibreOffice Calc charts;"
+																		),
+																		shiny::tags$li(
+																			shiny::em("Classic"),
+																			": a classic-looking theme, with x and y axis lines and no gridlines;"
+																		),
+																		shiny::tags$li(
+																			shiny::em("Cowplot"),
+																			": the default theme from the cowplot package;"
+																		),
+																		shiny::tags$li(
+																			shiny::em("Dark"),
+																			": The dark cousin of the 'Light' theme, with similar line sizes but a dark background. Useful to make thin coloured lines pop out;"
+																		),
+																		shiny::tags$li(
+																			shiny::em("Economist"),
+																			": style plots similar to those in The Economist;"
+																		),
+																		shiny::tags$li(
+																			shiny::em("Excel"),
+																			": theme to replicate the ugly monstrosity that was the old gray-background Excel chart. Please never use this;"
+																		),
+																		shiny::tags$li(
+																			shiny::em("Few"),
+																			": theme based on the rules and examples in Stephen Few's 'Practical Rules for Using Color in Charts';"
+																		),
+																		shiny::tags$li(
+																			shiny::em("Fivethirtyeight"),
+																			": theme inspired by the plots on http://fivethirtyeight.com;"
+																		),
+																		shiny::tags$li(
+																			shiny::em("Google docs"),
+																			": theme similar to the default look of charts in Google Docs;"
+																		),
+																		shiny::tags$li(
+																			shiny::em("Grey"),
+																			": the signature ggplot2 theme with a grey background and white gridlines, designed to put the data forward yet make comparisons easy;"
+																		),
+																		shiny::tags$li(shiny::em("HC"), ": theme based on the plots in Highcharts JS;"),
+																		shiny::tags$li(
+																			shiny::em("iGray"),
+																			": theme with white panel and gray background;"
+																		),
+																		shiny::tags$li(
+																			shiny::em("Light"),
+																			": a theme similar to the 'Linedraw' theme but with light grey lines and axes, to direct more attention towards the data;"
+																		),
+																		shiny::tags$li(
+																			shiny::em("Linedraw"),
+																			": a theme with only black lines of various widths on white backgrounds, reminiscent of a line drawings. Serves a purpose similar to the 'Black and white' theme. Note that this theme has some very thin lines (<< 1 pt) which some journals may refuse;"
+																		),
+																		shiny::tags$li(
+																			shiny::em("Minimal"),
+																			": a minimalistic theme with no background annotations;"
+																		),
+																		shiny::tags$li(
+																			shiny::em("Pander"),
+																			": a ggplot theme originated from the pander package;"
+																		),
+																		shiny::tags$li(
+																			shiny::em("Solarised"),
+																			": ggplot color themes based on the Solarised color palette;"
+																		),
+																		# shiny::tags$li(shiny::em("Stata (s2color)"), ": a theme based on the s2color Stata graph scheme;"),
+																		# shiny::tags$li(shiny::em("Stata (s2mono)"), ": a theme based on the s2mono Stata graph scheme;"),
+																		# shiny::tags$li(shiny::em("Stata (s1color)"), ": a theme based on the s1color Stata graph scheme;"),
+																		# shiny::tags$li(shiny::em("Stata (s1rcolor)"), ": a theme based on the s1rcolor Stata graph scheme;"),
+																		# shiny::tags$li(shiny::em("Stata (s1mono)"), ": a theme based on the s1mono Stata graph scheme;"),
+																		# shiny::tags$li(shiny::em("Stata (s2manual)"), ": a theme based on the s2manual Stata graph scheme;"),
+																		# shiny::tags$li(shiny::em("Stata (s1manual)"), ": a theme based on the s1manual Stata graph scheme;"),
+																		# shiny::tags$li(shiny::em("Stata (sj)"), ": a theme based on the sj Stata graph scheme;"),
+																		shiny::tags$li(
+																			shiny::em("Tufte"),
+																			": theme based on Chapter 6 of Edward Tufte's The Visual Display of Quantitative Information. No border, no axis lines, no grids;"
+																		),
+																		shiny::tags$li(
+																			shiny::em("WSJ"),
+																			": theme based on the plots in The Wall Street Journal."
+																		)
+																	)
+																)
 															)
 														))
-
 	)
 )
 
