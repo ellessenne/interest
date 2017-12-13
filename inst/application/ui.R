@@ -54,7 +54,6 @@ sidebar = shinydashboard::dashboardSidebar(
 )
 
 body = shinydashboard::dashboardBody(
-	shinyjs::useShinyjs(),
 	shiny::tags$head(
 		shiny::tags$link(rel = "stylesheet", type = "text/css", href = "theme.css")
 	),
@@ -190,7 +189,7 @@ body = shinydashboard::dashboardBody(
 				shinydashboard::tabBox(
 					width = 3,
 					shiny::tabPanel(
-						title = "Select DGM",
+						title = "Select factors",
 						shiny::uiOutput(outputId = "summaryStatisticsSelectDGM")
 					),
 					shiny::tabPanel(
