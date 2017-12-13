@@ -1,6 +1,6 @@
 Package: interest
 Version: 0.0.1.9000
-Date: 2017-12-06
+Date: 2017-12-13
 Title: Interactively explore results from simulation studies
 Description: INTEREST, acronym for INteractive Tool for Exploring REsults from Simulation sTudies, 
     is an interactive web app developed using R and shiny. It allows exploring results from simulation 
