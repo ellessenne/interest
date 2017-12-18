@@ -190,7 +190,7 @@ body = shinydashboard::dashboardBody(
 					width = 3,
 					shiny::tabPanel(
 						title = "Select factors",
-						shiny::uiOutput(outputId = "summaryStatisticsSelectDGM")
+						shiny::uiOutput(outputId = "summaryStatisticsSelectFactors")
 					),
 					shiny::tabPanel(
 						title = "Customise",
@@ -266,7 +266,7 @@ body = shinydashboard::dashboardBody(
 							shiny::em("View summary statistics"),
 							"tab, untick the",
 							shiny::em("export tidy data"),
-							"checkbox; otherwise, a tidy dataset with summary statistics for each method and each DGM is exported."
+							"checkbox; otherwise, a tidy dataset with summary statistics for each method and each 'by' factor is exported."
 						),
 						shiny::textInput(
 							inputId = "exportSummaryStatisticsName",
@@ -303,19 +303,17 @@ body = shinydashboard::dashboardBody(
 				shinydashboard::tabBox(
 					width = 3,
 					shiny::tabPanel(
-						title = "Select DGM / Facet",
+						title = "Select factors / Facet",
 						shiny::radioButtons(
 							inputId = "selectOrFacet",
-							label = "Select DGM or facet?",
-							choices = c("None", "Select DGM", "Facet"),
+							label = "Select factors or facet?",
+							choices = c("None", "Select factors", "Facet"),
 							selected = "None"
 						),
-						shiny::conditionalPanel(condition = "input.selectOrFacet == 'Select DGM'",
-																		shiny::uiOutput(outputId = "plotSelectDGM")
-						),
+						shiny::conditionalPanel(condition = "input.selectOrFacet == 'Select factors'",
+																		shiny::uiOutput(outputId = "plotSelectFactors")),
 						shiny::conditionalPanel(condition = "input.selectOrFacet == 'Facet'",
-																		shiny::uiOutput(outputId = "plotFacet")
-						)
+																		shiny::uiOutput(outputId = "plotFacet"))
 					),
 					shiny::tabPanel(
 						title = "Customise plots",

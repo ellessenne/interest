@@ -9,8 +9,6 @@
 
 # Bugs
 
-* Coloring the Estimates vs Standard Errors plots does not work with by-factors
-
 # Document
 
 * Formulas for summary statistics
