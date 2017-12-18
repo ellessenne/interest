@@ -1,7 +1,7 @@
 INTEREST
 ================
 Alessandro Gasparini
-2017-12-06
+2017-12-18
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 INTEREST, acronym for **IN**teractive **T**ool for **E**xploring **RE**sults from **S**imulation s**T**udies, is an interactive web app developed using R and [`shiny`](https://shiny.rstudio.com/). It allows exploring results from simulation studies interactively.
@@ -49,8 +49,8 @@ The workflow of INTERACT is simple:
 3.  tables and plots are produced automatically, and can be customised and explored interactively;
 4.  tables and plots can be exported for later use.
 
-Further material on INTEREST
-============================
+Additional material on INTEREST
+===============================
 
 -   Slides to present SiReX (former name of INTEREST) at the Students’ Day, 38<sup>th</sup> Annual Conference of the International Society for Clinical Biostatistics [\[here\]](README_files/iscb38_slides.pdf)
 -   Poster at the 2017 Annual Conference of the Department of Health Sciences, University of Leicester [\[here\]](README_files/hs_poster.pdf)
