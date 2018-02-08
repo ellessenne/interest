@@ -10,7 +10,6 @@
 #' library(interest)
 #' interest()
 #' }
-interest <- function(...)
-{
-	shiny::runApp(appDir = system.file("application", package = "interest"), ...)
+interest <- function(...) {
+  shiny::runApp(appDir = system.file("application", package = "interest"), ...)
 }
