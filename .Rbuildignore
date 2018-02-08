@@ -13,3 +13,5 @@ README_files/*
 ^.*\.Rproj$
 ^\.travis\.yml$
 ^appveyor\.yml$
+^README\.Rmd$
+^README-.*\.png$

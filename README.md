@@ -1,12 +1,11 @@
-INTEREST
-================
-Alessandro Gasparini
-2017-12-18
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+INTEREST
+========
+
 INTEREST, acronym for **IN**teractive **T**ool for **E**xploring **RE**sults from **S**imulation s**T**udies, is an interactive web app developed using R and [`shiny`](https://shiny.rstudio.com/). It allows exploring results from simulation studies interactively.
 
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/ellessenne/interest?branch=master&svg=true)](https://ci.appveyor.com/project/ellessenne/interest) [![Travis-CI Build Status](https://travis-ci.org/ellessenne/interest.svg?branch=master)](https://travis-ci.org/ellessenne/interest) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/interest)](https://cran.r-project.org/package=interest)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/ellessenne/interest?branch=master&svg=true)](https://ci.appveyor.com/project/ellessenne/interest) [![Travis-CI Build Status](https://travis-ci.org/ellessenne/interest.svg?branch=master)](https://travis-ci.org/ellessenne/interest) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/interest)](https://cran.r-project.org/package=interest) [![CRAN\_Logs\_Badge](http://cranlogs.r-pkg.org/badges/interest)](https://cran.r-project.org/package=interest) [![CRAN\_Logs\_Badge\_Total](http://cranlogs.r-pkg.org/badges/grand-total/interest)](https://cran.r-project.org/package=interest)
 
 Installation
 ============
@@ -16,7 +15,7 @@ INTEREST is shipped as a standalone R package, hosted only on GitHub at the mome
 It can be installed by typing the following R commands in your R console:
 
 ``` r
-if (!require(devtools)) install.packages(devtools)
+# install.packages("devtools")
 devtools::install_github("ellessenne/interest")
 ```
 
