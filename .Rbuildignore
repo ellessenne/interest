@@ -15,3 +15,4 @@ README_files/*
 ^appveyor\.yml$
 ^README\.Rmd$
 ^README-.*\.png$
+LICENSE
