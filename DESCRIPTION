@@ -6,6 +6,8 @@ Description: Explore results from simulation studies interactively using the shi
   Simulation sTudies.
 Authors@R: c(person("Alessandro", "Gasparini", role = c("aut", "cre"), email = "ag475@leicester.ac.uk"))
 License: GPL (>= 3)
+Depends:
+ R (>= 2.10)
 Imports:
  cowplot,
  devtools,
