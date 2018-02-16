@@ -1,9 +1,9 @@
 Package: interest
-Version: 0.0.1.9001
+Version: 0.0.1-9002
 Title: Interactively Explore Results from Simulation Studies
 Description: Explore results from simulation studies interactively using the shiny 
-  app INTEREST, acronym for INteractive Tool for Exploring REsults from Simulation 
-  sTudies.
+  app INTEREST. INTEREST stands for INteractive Tool for Exploring REsults from 
+  Simulation sTudies.
 Authors@R: c(person("Alessandro", "Gasparini", role = c("aut", "cre"), email = "ag475@leicester.ac.uk"))
 License: GPL (>= 3)
 Imports:
@@ -15,7 +15,7 @@ Imports:
  haven,
  labelled,
  readr,
- rsimsum (>= 0.1.0),
+ rsimsum (>= 0.2.0),
  shiny,
  shinydashboard,
  tidyr,
@@ -29,3 +29,4 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.0.1
 Encoding: UTF-8
 LazyData: true
+ByteCompile: true
