@@ -177,10 +177,10 @@ function(input, output, session) {
     shiny::req(data())
     s <- rsimsum::get_data(summ())
     if (input$summaryStatisticsIncludeMCSE) {
-      s[["coef"]] <- paste0(
+      s[["est"]] <- paste0(
         sprintf(
           paste0("%.", input$summaryStatisticsSigDigits, "f"),
-          s[["coef"]]
+          s[["est"]]
         ),
         " (",
         sprintf(
@@ -190,9 +190,9 @@ function(input, output, session) {
         ")"
       )
     } else {
-      s[["coef"]] <- sprintf(
+      s[["est"]] <- sprintf(
         paste0("%.", input$summaryStatisticsSigDigits, "f"),
-        s[["coef"]]
+        s[["est"]]
       )
     }
     s[["mcse"]] <- NULL
@@ -213,7 +213,7 @@ function(input, output, session) {
       s <- tidyr::spread(
         data = s,
         key = !! input$defineMethod,
-        value = coef
+        value = est
       )
     }
 
@@ -509,7 +509,7 @@ function(input, output, session) {
       "barplot" = {
         plot <- ggplot2::ggplot(
           df[df$stat == input$selectPlotSummaryStat, ],
-          ggplot2::aes_string(x = input$defineMethod, y = "coef")
+          ggplot2::aes_string(x = input$defineMethod, y = "est")
         ) +
           ggplot2::geom_bar(stat = "identity") +
           ggplot2::theme(axis.text.x = ggplot2::element_text(
@@ -527,7 +527,7 @@ function(input, output, session) {
       "lollyplot" = {
         plot <- ggplot2::ggplot(
           df[df$stat == input$selectPlotSummaryStat, ],
-          ggplot2::aes_string(y = input$defineMethod, x = "coef")
+          ggplot2::aes_string(y = input$defineMethod, x = "est")
         ) +
           ggplot2::geom_vline(
             xintercept = dplyr::case_when(
