@@ -6,9 +6,9 @@ header <- shinydashboard::dashboardHeader(title = "INTEREST")
 sidebar <- shinydashboard::dashboardSidebar(
   shinydashboard::sidebarMenu(
     shinydashboard::menuItem(
-      "Introduction",
-      tabName = "introductionTab",
-      icon = shiny::icon("info")
+      "Home",
+      tabName = "homeTab",
+      icon = shiny::icon("home")
     ),
     shinydashboard::menuItem(
       "Data",
@@ -31,8 +31,8 @@ sidebar <- shinydashboard::dashboardSidebar(
       icon = shiny::icon("bar-chart")
     ),
     shinydashboard::menuItem(
-      "Technical details",
-      tabName = "technicalDetailsTab",
+      "User guide",
+      tabName = "userGuideTab",
       icon = shiny::icon("book")
     ),
     shinydashboard::menuItem(
@@ -59,13 +59,12 @@ body <- shinydashboard::dashboardBody(
   ),
   shinydashboard::tabItems(
     shinydashboard::tabItem(
-      tabName = "introductionTab",
+      tabName = "homeTab",
       shiny::fluidRow(
-        shinydashboard::box(
-          title = "Introduction to INTEREST",
-          width = 12,
-          solidHeader = TRUE
-        )
+      	shinydashboard::box(
+      		shiny::HTML(paste0("<div class='jumbotron' style='background:white;'><div class='container'><h1>Welcome to INTEREST</h1><p>INTEREST is an interactive Shiny app for exploring results of simulation studies.</p><p>An introduction to INTEREST will be included here, including references.</p></div></div>")),
+      		solidHeader = TRUE,
+      		width = 12)
       )
     ),
     shinydashboard::tabItem(
@@ -451,13 +450,14 @@ body <- shinydashboard::dashboardBody(
       )
     ),
     shinydashboard::tabItem(
-      tabName = "technicalDetailsTab",
+      tabName = "userGuideTab",
       shiny::fluidRow(
         shinydashboard::tabBox(
           id = "tabPlots",
-          width = 9,
+          width = 12,
+          shiny::tabPanel(title = "Supported data format"),
           shiny::tabPanel(title = "Summary statistics"),
-          shiny::tabPanel(title = "Monte Carlo SEs"),
+          shiny::tabPanel(title = "Monte Carlo standard errors"),
           shiny::tabPanel(
             title = "Plot themes",
             shiny::p(
