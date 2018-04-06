@@ -5,6 +5,7 @@ header <- shinydashboard::dashboardHeader(title = "INTEREST")
 
 sidebar <- shinydashboard::dashboardSidebar(
   shinydashboard::sidebarMenu(
+    id = "tabs",
     shinydashboard::menuItem(
       "Home",
       tabName = "homeTab",
@@ -21,6 +22,11 @@ sidebar <- shinydashboard::dashboardSidebar(
       icon = shiny::icon("search")
     ),
     shinydashboard::menuItem(
+      "Missing data",
+      tabName = "missingDataTab",
+      icon = shiny::icon("question-circle")
+    ),
+    shinydashboard::menuItem(
       "Summary statistics",
       tabName = "summaryStatisticsTab",
       icon = shiny::icon("list-ol")
@@ -29,6 +35,126 @@ sidebar <- shinydashboard::dashboardSidebar(
       "Plots",
       tabName = "plotsTab",
       icon = shiny::icon("bar-chart")
+    ),
+    shinydashboard::menuItem(
+      "Customise plot",
+      icon = shiny::icon("wrench"),
+      startExpanded = FALSE,
+      shiny::checkboxInput(
+        inputId = "textInHeat",
+        label = "Text in heat plots",
+        value = TRUE
+      ),
+      shiny::textInput(inputId = "customXlab", label = "Label of x-axis:"),
+      shiny::textInput(inputId = "customYlab", label = "Label of y-axis:"),
+      shiny::selectInput(
+        inputId = "customTheme",
+        label = "Plot theme:",
+        choices = c(
+          "Black and white" = "theme_bw",
+          "Few" = "theme_few",
+          "Grey" = "theme_grey",
+          "Light" = "theme_light",
+          "Linedraw" = "theme_linedraw",
+          "Minimal" = "theme_minimal",
+          "Tufte" = "theme_tufte",
+          "Viridis" = "theme_viridis"
+        ),
+        selected = "theme_grey"
+      ),
+      shiny::sliderInput(
+        inputId = "plotWidth",
+        "Plot width:",
+        value = 6,
+        min = 1,
+        max = 50
+      ),
+      shiny::sliderInput(
+        inputId = "plotHeight",
+        "Plot height:",
+        value = 6,
+        min = 1,
+        max = 50
+      ),
+      shiny::numericInput(
+        inputId = "plotResolution",
+        "Plot resolution (DPI):",
+        value = 300,
+        min = 72,
+        max = 2400
+      ),
+      shiny::selectInput(
+        inputId = "plotFormat",
+        label = "Format:",
+        choices = c(
+          "eps",
+          "ps",
+          "tex (pictex)" = "tex",
+          "pdf",
+          "jpeg",
+          "tiff",
+          "png",
+          "bmp",
+          "svg"
+        ),
+        selected = "png"
+      )
+    ),
+    shinydashboard::menuItem(
+      "Options",
+      icon = shiny::icon("cogs"),
+      startExpanded = FALSE,
+      shiny::checkboxInput(
+        inputId = "includeMCSE",
+        label = "Monte Carlo SEs",
+        value = TRUE
+      ),
+      shiny::selectInput(
+        inputId = "summaryStatisticsWhich",
+        label = "Summary statistics of interest:",
+        choices = c(
+          "Non-missing estimates/SEs" = "nsim",
+          "Average point estimate" = "thetamean",
+          "Median point estimate" = "thetamedian",
+          "Average standard error" = "se2mean",
+          "Median standard error" = "se2median",
+          "Bias in point estimate" = "bias",
+          "Empirical standard error" = "empse",
+          "Mean squared error" = "mse",
+          "% gain in precision relative to reference method" = "relprec",
+          "Model-based standard error" = "modelse",
+          "Relative % error in standard error" = "relerror",
+          "Coverage of nominal 95% CI" = "cover",
+          "Bias corrected coverage of nominal 95% CI" = "bccover",
+          "Power of 5% level test" = "power"
+        ),
+        multiple = TRUE,
+        selected = c(
+          "nsim",
+          "thetamean",
+          "thetamedian",
+          "se2mean",
+          "se2median",
+          "bias",
+          "empse",
+          "mse",
+          "relprec",
+          "modelse",
+          "relerror",
+          "cover",
+          "bccover",
+          "power"
+        )
+      ),
+      shiny::sliderInput(
+        inputId = "significantDigits",
+        label = "Number of significant digits:",
+        min = 0,
+        max = 10,
+        value = 4,
+        step = 1,
+        round = TRUE
+      )
     ),
     shinydashboard::menuItem(
       "User guide",
@@ -61,17 +187,20 @@ body <- shinydashboard::dashboardBody(
     shinydashboard::tabItem(
       tabName = "homeTab",
       shiny::fluidRow(
-      	shinydashboard::box(
-      		shiny::HTML(paste0("<div class='jumbotron' style='background:white;'><div class='container'><h1>Welcome to INTEREST</h1><p>INTEREST is an interactive Shiny app for exploring results of simulation studies.</p><p>An introduction to INTEREST will be included here, including references.</p></div></div>")),
-      		solidHeader = TRUE,
-      		width = 12)
+        shinydashboard::box(
+          shiny::HTML(paste0("<div class='jumbotron' style='background:white;'><div class='container'><h1>Welcome to INTEREST</h1><p>INTEREST is an interactive Shiny app for exploring results of simulation studies.</p><p>An introduction to INTEREST will be included here, including references.</p></div></div>")),
+          solidHeader = TRUE,
+          width = 12
+        )
       )
     ),
+    #########################################################
+    ### Data tab
     shinydashboard::tabItem(
       tabName = "dataTab",
       shiny::fluidRow(
         shinydashboard::box(
-          title = "Data upload form",
+          title = "Load data to INTEREST",
           width = 12,
           solidHeader = TRUE,
           shiny::p(
@@ -130,7 +259,7 @@ body <- shinydashboard::dashboardBody(
       shiny::fluidRow(
         shinydashboard::box(
           title = "Define variables",
-          width = 4,
+          width = 3,
           solidHeader = TRUE,
           shiny::selectInput(
             inputId = "defineEstvarname",
@@ -150,7 +279,7 @@ body <- shinydashboard::dashboardBody(
         ),
         shinydashboard::box(
           title = "Define methods",
-          width = 4,
+          width = 3,
           solidHeader = TRUE,
           shiny::selectInput(
             inputId = "defineMethod",
@@ -164,8 +293,8 @@ body <- shinydashboard::dashboardBody(
           )
         ),
         shinydashboard::box(
-          title = "Define by factors",
-          width = 4,
+          title = "Define DGMs",
+          width = 3,
           solidHeader = TRUE,
           shiny::selectInput(
             inputId = "defineBy",
@@ -173,9 +302,17 @@ body <- shinydashboard::dashboardBody(
             choices = "",
             multiple = TRUE
           )
+        ),
+        shinydashboard::box(
+          title = "Define estimands",
+          width = 3,
+          solidHeader = TRUE,
+          shiny::em("Coming soon...")
         )
       )
     ),
+    #########################################################
+    ### View uploaded data tab
     shinydashboard::tabItem(
       tabName = "viewDataTab",
       shiny::fluidRow(
@@ -186,78 +323,42 @@ body <- shinydashboard::dashboardBody(
         )
       )
     ),
+    #########################################################
+    ### Missing data tab
+    shinydashboard::tabItem(
+      tabName = "missingDataTab",
+      shiny::fluidRow(
+        shinydashboard::tabBox(
+          id = "tabPlots",
+          width = 12,
+          shiny::tabPanel(
+            title = "Visualising missing data",
+            shiny::selectInput(inputId = "missingDataPlotType", label = "Select visualisation:", choices = ""),
+            shiny::plotOutput(outputId = "missingDataPlot", height = "500px"),
+            shiny::uiOutput(outputId = "plotMissingButton")
+          ),
+          shiny::tabPanel(
+            title = "Table of missing data",
+            shiny::dataTableOutput(outputId = "missingDataTable"),
+            shiny::hr(),
+            shiny::textInput(inputId = "missingDataLaTeXTableCaption", label = "Table caption:"),
+            shiny::verbatimTextOutput(outputId = "missingDataLaTeXTable")
+          )
+        )
+      )
+    ),
+    #########################################################
+    ### Summary statistics tab
     shinydashboard::tabItem(
       tabName = "summaryStatisticsTab",
       shiny::fluidRow(
         shinydashboard::tabBox(
-          width = 3,
-          shiny::tabPanel(
-            title = "Select factors",
-            shiny::uiOutput(outputId = "summaryStatisticsSelectFactors")
-          ),
-          shiny::tabPanel(
-            title = "Customise",
-            shiny::selectInput(
-              inputId = "summaryStatisticsWhich",
-              label = "Summary statistics of interest:",
-              choices = c(
-                "Non-missing estimates/SEs" = "nsim",
-                "Average point estimate" = "thetamean",
-                "Median point estimate" = "thetamedian",
-                "Average standard error" = "se2mean",
-                "Median standard error" = "se2median",
-                "Bias in point estimate" = "bias",
-                "Empirical standard error" = "empse",
-                "Mean squared error" = "mse",
-                "% gain in precision relative to reference method" = "relprec",
-                "Model-based standard error" = "modelse",
-                "Relative % error in standard error" = "relerror",
-                "Coverage of nominal 95% CI" = "cover",
-                "Bias corrected coverage of nominal 95% CI" = "bccover",
-                "Power of 5% level test" = "power"
-              ),
-              multiple = TRUE,
-              selected = c(
-                "nsim",
-                "thetamean",
-                "thetamedian",
-                "se2mean",
-                "se2median",
-                "bias",
-                "empse",
-                "mse",
-                "relprec",
-                "modelse",
-                "relerror",
-                "cover",
-                "bccover",
-                "power"
-              )
-            ),
-            shiny::sliderInput(
-              inputId = "summaryStatisticsSigDigits",
-              label = "Number of significant digits:",
-              min = 0,
-              max = 10,
-              value = 4,
-              step = 1,
-              round = TRUE
-            ),
-            shiny::checkboxInput(
-              inputId = "summaryStatisticsIncludeMCSE",
-              label = "Include Monte Carlo Standard Errors",
-              value = TRUE
-            )
-          )
-        ),
-        shinydashboard::tabBox(
-          width = 9,
+          width = 12,
           shiny::tabPanel(
             "View summary statistics",
-            shiny::dataTableOutput(outputId = "summaryStatisticsDataTable")
-          ),
-          shiny::tabPanel(
-            "Export table",
+            shiny::uiOutput(outputId = "summaryStatisticsSelectFactors"),
+            shiny::dataTableOutput(outputId = "summaryStatisticsDataTable"),
+            shiny::hr(),
             shiny::textInput(
               inputId = "summaryStatisticsLaTeXCaption",
               label = "Table caption:"
@@ -302,129 +403,30 @@ body <- shinydashboard::dashboardBody(
         )
       )
     ),
+    #########################################################
+    ### Plots tab
     shinydashboard::tabItem(
       tabName = "plotsTab",
       shiny::fluidRow(
         shinydashboard::tabBox(
-          width = 3,
-          shiny::tabPanel(
-            title = "Select factors / Facet",
-            shiny::radioButtons(
-              inputId = "selectOrFacet",
-              label = "Select factors or facet?",
-              choices = c("None", "Select factors", "Facet"),
-              selected = "None"
-            ),
-            shiny::conditionalPanel(
-              condition = "input.selectOrFacet == 'Select factors'",
-              shiny::uiOutput(outputId = "plotSelectFactors")
-            ),
-            shiny::conditionalPanel(
-              condition = "input.selectOrFacet == 'Facet'",
-              shiny::uiOutput(outputId = "plotFacet")
-            )
-          ),
-          shiny::tabPanel(
-            title = "Customise plots",
-            shiny::textInput(inputId = "customXlab", label = "X-axis label:"),
-            shiny::textInput(inputId = "customYlab", label = "Y-axis label:"),
-            shiny::selectInput(
-              inputId = "customTheme",
-              label = "Plot theme:",
-              choices = c(
-                "Base" = "theme_base",
-                "Black and white" = "theme_bw",
-                "Calc" = "theme_calc",
-                "Classic" = "theme_classic",
-                "Cowplot" = "theme_cowplot",
-                "Dark" = "theme_dark",
-                "Economist" = "theme_economist",
-                "Excel" = "theme_excel",
-                "Few" = "theme_few",
-                "Fivethirtyeight" = "theme_fivethirtyeight",
-                "Google docs" = "theme_gdocs",
-                "Grey" = "theme_grey",
-                "HC" = "theme_hc",
-                "iGray" = "theme_igray",
-                "Light" = "theme_light",
-                "Linedraw" = "theme_linedraw",
-                "Minimal" = "theme_minimal",
-                "Pander" = "theme_pander",
-                "Solarised" = "theme_solarized",
-                "Stata (s2color)" = "theme_stata_s2color",
-                "Stata (s2mono)" = "theme_stata_s2mono",
-                "Stata (s1color)" = "theme_stata_s1color",
-                "Stata (s1rcolor)" = "theme_stata_s1rcolor",
-                "Stata (s1mono)" = "theme_stata_s1mono",
-                "Stata (s2manual)" = "theme_stata_s2manual",
-                "Stata (s1manual)" = "theme_stata_s1manual",
-                "Stata (sj)" = "theme_stata_sj",
-                "Tufte" = "theme_tufte",
-                "WSJ" = "theme_wsj"
-              ),
-              selected = "Black and white"
-            ),
-            shiny::sliderInput(
-              inputId = "plotWidth",
-              "Plot width:",
-              value = 6,
-              min = 1,
-              max = 50
-            ),
-            shiny::sliderInput(
-              inputId = "plotHeight",
-              "Plot height:",
-              value = 6,
-              min = 1,
-              max = 50
-            ),
-            shiny::numericInput(
-              inputId = "plotResolution",
-              "Plot resolution (DPI):",
-              value = 320,
-              min = 72,
-              max = 1200
-            ),
-            shiny::selectInput(
-              inputId = "plotFormat",
-              label = "Format:",
-              choices = c(
-                "eps",
-                "ps",
-                "tex (pictex)" = "tex",
-                "pdf",
-                "jpeg",
-                "tiff",
-                "png",
-                "bmp",
-                "svg"
-              ),
-              selected = "png"
-            ),
-            shiny::uiOutput(outputId = "plotButton")
-          )
-        ),
-        shinydashboard::tabBox(
           id = "tabPlots",
-          width = 9,
+          width = 12,
           shiny::tabPanel(
-            "Plot estimates",
+            "Estimates plots",
             shiny::selectInput(
               inputId = "selectPlotEstimates",
               label = "Select plot type:",
-              choices = c("Point estimates vs SEs" = "b_vs_se")
+              choices = c(
+                "Pattern (Estimates vs SEs)" = "b_vs_se",
+                "Distribution (Estimates)" = "dist_b",
+                "Distribution (SEs)" = "dist_se"
+              )
             ),
-            shiny::selectInput(
-              inputId = "plotEstimatesColorMethodBy",
-              label = "Color:",
-              choices = c("None"),
-              selected = "none"
-            ),
-            shiny::plotOutput(outputId = "outPlotEstimates", width = "100%"),
-            shiny::verbatimTextOutput(outputId = "outPlotEstimatesCode")
+            shiny::plotOutput(outputId = "outPlotEstimates", height = "500px"),
+            shiny::uiOutput(outputId = "plotEstimatesButton")
           ),
           shiny::tabPanel(
-            title = "Plot summary statistics",
+            title = "Summary statistics plots",
             shiny::selectInput(
               inputId = "selectPlotSummaryStat",
               label = "Select summary statistic:",
@@ -434,17 +436,23 @@ body <- shinydashboard::dashboardBody(
               inputId = "selectPlotSummary",
               label = "Select plot type:",
               choices = c(
-                "Barplot" = "barplot",
-                "Lollyplot" = "lollyplot"
+                "Forest plot" = "forest",
+                "Bar plot" = "bar",
+                "Lolly plot" = "lolly",
+                "Zip plot" = "zip",
+                "Heat plot" = "heat"
               )
             ),
-            shiny::checkboxInput(
-              inputId = "plotMCSEConfidenceIntervals",
-              label = "Plot confidence intervals based on Monte Carlo standard errors?",
-              value = TRUE
+            shiny::conditionalPanel(
+              condition = "input.selectPlotSummary == 'heat'",
+              shiny::selectInput(
+                inputId = "selectHeatY",
+                label = "Select Y-factor for a heat plot:",
+                choices = ""
+              )
             ),
-            shiny::plotOutput(outputId = "outPlotSummary", width = "100%"),
-            shiny::verbatimTextOutput(outputId = "outPlotSummaryCode")
+            shiny::plotOutput(outputId = "outPlotSummary", height = "500px"),
+            shiny::uiOutput(outputId = "plotSummaryButton")
           )
         )
       )
@@ -455,9 +463,10 @@ body <- shinydashboard::dashboardBody(
         shinydashboard::tabBox(
           id = "tabPlots",
           width = 12,
-          shiny::tabPanel(title = "Supported data format"),
+          shiny::tabPanel(title = "Loading data"),
           shiny::tabPanel(title = "Summary statistics"),
           shiny::tabPanel(title = "Monte Carlo standard errors"),
+          shiny::tabPanel(title = "Plots"),
           shiny::tabPanel(
             title = "Plot themes",
             shiny::p(
@@ -465,62 +474,20 @@ body <- shinydashboard::dashboardBody(
             ),
             shiny::tags$ul(
               shiny::tags$li(
-                shiny::em("Base"),
-                ": theme similar to the default settings of the base R graphics;"
+                shiny::em("Default"),
+                ": no custom theme is applied;"
               ),
               shiny::tags$li(
                 shiny::em("Black and white"),
                 ": the classic dark-on-light ggplot2 theme. May work better for presentations displayed with a projector;"
               ),
               shiny::tags$li(
-                shiny::em("Calc"),
-                ": theme similar to the default settings of LibreOffice Calc charts;"
-              ),
-              shiny::tags$li(
-                shiny::em("Classic"),
-                ": a classic-looking theme, with x and y axis lines and no gridlines;"
-              ),
-              shiny::tags$li(
-                shiny::em("Cowplot"),
-                ": the default theme from the cowplot package;"
-              ),
-              shiny::tags$li(
-                shiny::em("Dark"),
-                ": The dark cousin of the 'Light' theme, with similar line sizes but a dark background. Useful to make thin coloured lines pop out;"
-              ),
-              shiny::tags$li(
-                shiny::em("Economist"),
-                ": style plots similar to those in The Economist;"
-              ),
-              shiny::tags$li(
-                shiny::em("Excel"),
-                ": theme to replicate the ugly monstrosity that was the old gray-background Excel chart. Please never use this;"
-              ),
-              shiny::tags$li(
                 shiny::em("Few"),
                 ": theme based on the rules and examples in Stephen Few's 'Practical Rules for Using Color in Charts';"
               ),
               shiny::tags$li(
-                shiny::em("Fivethirtyeight"),
-                ": theme inspired by the plots on ",
-                shiny::tags$a(href = "http://fivethirtyeight.com", "http://fivethirtyeight.com"),
-                ";"
-              ),
-              shiny::tags$li(
-                shiny::em("Google docs"),
-                ": theme similar to the default look of charts in Google Docs;"
-              ),
-              shiny::tags$li(
                 shiny::em("Grey"),
                 ": the signature ggplot2 theme with a grey background and white gridlines, designed to put the data forward yet make comparisons easy;"
-              ),
-              shiny::tags$li(
-                shiny::em("HC"),
-                ": theme based on the plots in Highcharts JS;"
-              ),
-              shiny::tags$li(
-                shiny::em("iGray"),
-                ": theme with white panel and gray background;"
               ),
               shiny::tags$li(
                 shiny::em("Light"),
@@ -535,52 +502,18 @@ body <- shinydashboard::dashboardBody(
                 ": a minimalistic theme with no background annotations;"
               ),
               shiny::tags$li(
-                shiny::em("Pander"),
-                ": a ggplot theme originated from the pander package;"
-              ),
-              shiny::tags$li(
-                shiny::em("Solarised"),
-                ": ggplot color themes based on the Solarised color palette;"
-              ),
-              shiny::tags$li(
-                shiny::em("Stata (s2color)"),
-                ": a theme based on the s2color Stata graph scheme;"
-              ),
-              shiny::tags$li(
-                shiny::em("Stata (s2mono)"),
-                ": a theme based on the s2mono Stata graph scheme;"
-              ),
-              shiny::tags$li(
-                shiny::em("Stata (s1color)"),
-                ": a theme based on the s1color Stata graph scheme;"
-              ),
-              shiny::tags$li(
-                shiny::em("Stata (s1rcolor)"),
-                ": a theme based on the s1rcolor Stata graph scheme;"
-              ),
-              shiny::tags$li(
-                shiny::em("Stata (s1mono)"),
-                ": a theme based on the s1mono Stata graph scheme;"
-              ),
-              shiny::tags$li(
-                shiny::em("Stata (s2manual)"),
-                ": a theme based on the s2manual Stata graph scheme;"
-              ),
-              shiny::tags$li(
-                shiny::em("Stata (s1manual)"),
-                ": a theme based on the s1manual Stata graph scheme;"
-              ),
-              shiny::tags$li(
-                shiny::em("Stata (sj)"),
-                ": a theme based on the sj Stata graph scheme;"
-              ),
-              shiny::tags$li(
                 shiny::em("Tufte"),
                 ": theme based on Chapter 6 of Edward Tufte's The Visual Display of Quantitative Information. No border, no axis lines, no grids;"
               ),
               shiny::tags$li(
-                shiny::em("WSJ"),
-                ": theme based on the plots in The Wall Street Journal."
+                shiny::em("Viridis"),
+                ": a theme based on the viridis colour palette created by",
+
+                "and",
+                shiny::tags$a(href = "https://github.com/njsmith", "Nathaniel Smith"),
+                "for the Python",
+                shiny::em("matplotlib"),
+                "library."
               )
             )
           )
