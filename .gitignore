@@ -6,3 +6,4 @@
 *.csv
 *.rds
 *.sas7bdat
+inst/application/rsconnect
