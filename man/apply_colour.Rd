@@ -2,14 +2,17 @@
 % Please edit documentation in R/apply_colour.R
 \name{apply_colour}
 \alias{apply_colour}
+\alias{apply_color}
 \title{Apply colour to a ggplot object}
 \usage{
 apply_colour(ggobject, theme)
+
+apply_color(ggobject, theme)
 }
 \arguments{
 \item{ggobject}{A \code{ggplot2} object.}
 
-\item{theme}{A string specifying the colour and fill scales to be added to the ggplot2 plot. Possible choices are: \code{theme_base}, \code{theme_bw}, \code{theme_calc}, \code{theme_classic}, \code{theme_cowplot}, \code{theme_dark}, \code{theme_economist}, \code{theme_excel}, \code{theme_few}, \code{theme_fivethirtyeight}, \code{theme_gdocs}, \code{theme_grey}, \code{theme_hc}, \code{theme_igray}, \code{theme_light}, \code{theme_linedraw}, \code{theme_minimal}, \code{theme_pander}, \code{theme_solarized}, \code{theme_stata_s2color}, \code{theme_stata_s2mono}, \code{theme_stata_s1color}, \code{theme_stata_s1rcolor}, \code{theme_stata_s1mono}, \code{theme_stata_s2manual}, \code{theme_stata_s1manual}, \code{theme_stata_sj}, \code{theme_tufte}, \code{theme_wsj}. Color and fill scales are imported from the \code{ggplot2}, \code{ggthemes}, and \code{cowplot} packages.}
+\item{theme}{A string specifying the theme to be added to the ggplot2 plot. Possible choices are: \code{theme_bw}, \code{theme_dark}, \code{theme_few}, \code{theme_grey}, \code{theme_light}, \code{theme_linedraw}, \code{theme_minimal}, \code{theme_tufte}, \code{theme_viridis}. Themes, color scales, and fill scales are imported from the \code{ggplot2}, \code{ggthemes}, \code{viridis}.}
 }
 \value{
 A \code{ggplot2} object.
