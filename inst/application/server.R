@@ -181,8 +181,8 @@ function(input, output, session) {
     if (input$customYlab != "") plot <- plot + ggplot2::labs(y = input$customYlab)
 
     # Custom theme
-    plot <- apply_theme(ggobject = plot, theme = input$customTheme)
-    plot <- apply_colour(ggobject = plot, theme = input$customTheme)
+    plot <- interest:::apply_theme(ggobject = plot, theme = input$customTheme)
+    plot <- interest:::apply_colour(ggobject = plot, theme = input$customTheme)
 
     # Return plot
     plot
@@ -571,8 +571,8 @@ function(input, output, session) {
     if (input$customYlab != "") plot <- plot + ggplot2::labs(y = input$customYlab)
 
     # Custom theme
-    plot <- apply_theme(ggobject = plot, theme = input$customTheme)
-    plot <- apply_colour(ggobject = plot, theme = input$customTheme)
+    plot <- interest:::apply_theme(ggobject = plot, theme = input$customTheme)
+    plot <- interest:::apply_colour(ggobject = plot, theme = input$customTheme)
 
     # Return plot
     plot
@@ -666,8 +666,8 @@ function(input, output, session) {
     if (input$customYlab != "") plot <- plot + ggplot2::labs(y = input$customYlab)
 
     # Custom theme
-    plot <- apply_theme(ggobject = plot, theme = input$customTheme)
-    plot <- apply_colour(ggobject = plot, theme = input$customTheme)
+    plot <- interest:::apply_theme(ggobject = plot, theme = input$customTheme)
+    plot <- interest:::apply_colour(ggobject = plot, theme = input$customTheme)
 
     # Return plot
     plot
