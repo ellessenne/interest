@@ -22,5 +22,5 @@ apply_colour <- function(ggobject, theme) {
 
 #' @rdname apply_colour
 apply_color <- function(ggobject, theme) {
-	apply_colour(ggobject = ggobject, theme = theme)
+  apply_colour(ggobject = ggobject, theme = theme)
 }

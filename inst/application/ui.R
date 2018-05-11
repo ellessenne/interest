@@ -188,7 +188,7 @@ body <- shinydashboard::dashboardBody(
       tabName = "homeTab",
       shiny::fluidRow(
         shinydashboard::box(
-          shiny::HTML(paste0("<div class='jumbotron' style='background:white;'><div class='container'><h1>Welcome to INTEREST</h1><p>INTEREST is an interactive Shiny app for exploring results of simulation studies.</p><p>An introduction to INTEREST will be included here, including references.</p></div></div>")),
+          shiny::HTML(paste0("<div class='jumbotron' style='background:white;'><div class='container'><h1>Welcome to INTEREST!</h1><p>INTEREST is a Shiny app that allows exploring results from Monte Carlo simulation studies interactively and producing plots and tables ready to use in manuscripts and presentations.</p><p>INTEREST is also great for disseminating and inspecting results from published simulation studies where the dataset with results is openly available.</p><p>Please read the user guide to find all information on how to run INTEREST; if you find INTEREST useful for your research, please cite the following reference: link-title-missing.</p></div></div>")),
           solidHeader = TRUE,
           width = 12
         )
@@ -198,45 +198,6 @@ body <- shinydashboard::dashboardBody(
     ### Data tab
     shinydashboard::tabItem(
       tabName = "dataTab",
-      shiny::fluidRow(
-        shinydashboard::box(
-          title = "Load data to INTEREST",
-          width = 12,
-          solidHeader = TRUE,
-          shiny::p(
-            "INTEREST supports uploading data, provinding a link, or even pasting data. The uploaded or linked file can be a comma-separated (.csv) file, a Stata version 8-14 file (.dta), an SPSS file (.sav), a SAS file (.sas7bdat), or an R serialised file (.rds); format will be inferred automatically, as long as you provide a file with the appropriate extension (case insensitive). Files ending in .gz, .bz2, .xz, or .zip will be automatically uncompressed. Pasted data is read as tab-separated values."
-          ),
-          shiny::p(
-            "The dataset must be in tidy format, with variables in columns and observations in rows. See",
-            shiny::a(href = "https://www.jstatsoft.org/article/view/v059i10", "here"),
-            "for more details on tidy data. The app - at the moment - can handle a single estimand at once, and the uploaded dataset must include the following variables:"
-          ),
-          shiny::tags$ul(
-            shiny::tags$li(
-              "A variable representing an estimated coefficient or value from the simulation study;"
-            ),
-            shiny::tags$li(
-              "A variable representing the standard error of the estimated coefficient."
-            )
-          ),
-          shiny::p(
-            "The true value of the estimand must be specified by the user. Additionally, a dataset could contain the following variables:"
-          ),
-          shiny::tags$ul(
-            shiny::tags$li(
-              "A variable representing methods compared with the simulation study;"
-            ),
-            shiny::tags$li(
-              "A list of variables representing",
-              shiny::em("by"),
-              "factors that identify the various data-generating mechanisms, such as sample size, true distribution, etc."
-            )
-          ),
-          shiny::p(
-            "After uploading a dataset to INTEREST it will be possible to assign each variable to estimands, SEs, etc."
-          )
-        )
-      ),
       shiny::fluidRow(
         shinydashboard::box(
           title = "Select method for uploading data",
@@ -372,7 +333,7 @@ body <- shinydashboard::dashboardBody(
               shiny::em("View summary statistics"),
               "tab, untick the",
               shiny::em("export tidy data"),
-              "checkbox; otherwise, a tidy dataset with summary statistics for each method and each 'by' factor is exported."
+              "checkbox; otherwise, a tidy dataset with summary statistics for each method and each data-generating factor is exported."
             ),
             shiny::textInput(
               inputId = "exportSummaryStatisticsName",
@@ -463,10 +424,68 @@ body <- shinydashboard::dashboardBody(
         shinydashboard::tabBox(
           id = "tabPlots",
           width = 12,
-          shiny::tabPanel(title = "Loading data"),
-          shiny::tabPanel(title = "Summary statistics"),
-          shiny::tabPanel(title = "Monte Carlo standard errors"),
-          shiny::tabPanel(title = "Plots"),
+          shiny::tabPanel(title = "Uploading data",
+          								shiny::p("INTEREST supports uploading data, provinding a link, or even pasting data."),
+          								shiny::p("The uploaded or linked file can be a comma-separated (.csv) file, a Stata version 8-14 file (.dta), an SPSS file (.sav), a SAS file (.sas7bdat), or an R serialised file (.rds); format will be inferred automatically, as long as you provide a file with the appropriate extension (case insensitive). Files ending in .gz, .bz2, .xz, or .zip will be automatically uncompressed. Pasted data is read as tab-separated values."
+          									),
+          									shiny::p("The dataset must be in tidy format, with variables in columns and observations in rows. See", shiny::a(href = "https://www.jstatsoft.org/article/view/v059i10", "here"), "for more details on tidy data. The app - at the moment - can handle a single estimand at once, and the uploaded dataset must include the following variables:"),
+          								shiny::tags$ul(
+          									shiny::tags$li("A variable representing an estimated coefficient or value from the simulation study;"),
+          									shiny::tags$li("A variable representing the standard error of the estimated coefficient.")
+          								),
+          								shiny::p("The true value of the estimand must be specified by the user. Additionally, a dataset could contain the following variables:"),
+          								shiny::tags$ul(
+          									shiny::tags$li("A variable representing methods compared with the simulation study;"),
+          									shiny::tags$li("A list of variables representing the various data-generating factors [DGMs], e.g. sample size, true distribution, etc.")
+          								),
+          								shiny::p("After uploading a dataset to INTEREST it will be possible to assign each variable to estimands, SEs, etc.")
+          								),
+          shiny::tabPanel(title = "Summary statistics and Monte Carlo standard errors",
+          								shiny::p("INTEREST supports the following summary statistics:"),
+          								shiny::tags$ul(
+          									shiny::tags$li("Bias, which quantifies whether the estimator targets the true value on average;"),
+          									shiny::tags$li("Empirical standard error, estimating the standard deviation of the estimated values over all replications"),
+          									shiny::tags$li("Relative precision of a given method B against a reference method A, useful when comparing several methods at once;"),
+          									shiny::tags$li("Mean squared error, a measure that takes into account both precision and accuracy of a method. It is the sum of the squared bias and variance of the estimated values;"),
+          									shiny::tags$li("Model based standard error, computed by averaging the estimated standard errors for each replication;"),
+          									shiny::tags$li("Relative error in model standard error, a measure that quantifies how well the model standard error targets the empirical standard error;"),
+          									shiny::tags$li("Coverage, another key property of an estimator. It is defined as the probability that a confidence interval contains the true value;"),
+          									shiny::tags$li("Bias corrected coverage, a useful measure as under coverage may be induced by bias;"),
+          									shiny::tags$li("Power of a significance test at a given level alpha.")
+          								),
+          								shiny::p("Each summary statistic comes with its Monte Carlo standard error by default, to help understanding the role of chance in results of simulation studies."),
+          								shiny::p("Further information on each summary statistics and Monte Carlo standard errors, including formulas, can be found here:"),
+         									shiny::tags$ul(
+         										shiny::tags$li("White, I.R. 2010.", shiny::em("simsum: Analyses of simulation studies including Monte Carlo error"), "The Stata Journal 10(3): 369-385 <", shiny::tags$a(href = "http://www.stata-journal.com/article.html?article=st0200", "http://www.stata-journal.com/article.html?article=st0200"), ">"),
+         										shiny::tags$li("Morris, T.P, White, I.R., and Crowther, M.J. 2017.", shiny::em("Using simulation studies to evaluate statistical methods"), "<", shiny::tags$a(href = "https://arxiv.org/abs/1712.03198", "arXiv:1712.03198"), ">")
+         									)
+          								),
+          shiny::tabPanel(title = "Plots",
+          								shiny::p("INTEREST can produce a variety of plots to visualise results from simulation studies automatically."),
+          								shiny::p("Plots produced by INTEREST can be categorised into two broad groups:"),
+          								shiny::tags$ol(
+          									shiny::tags$li("plots of estimated values (and standard errors);"),
+          									shiny::tags$li("plots of summary statistics.")
+          								),
+          								shiny::p("Plots for estimated values and standard errors are:"),
+          								shiny::tags$ul(
+          									shiny::tags$li("scatter plot of estimated values versus standard errors;"),
+          									shiny::tags$li("plot of smoothed density estimates of estimated values (or standard errors), using the kernel method.")
+          								),
+          								shiny::p("Each plot will include colours defined by method (if any) and automatic faceting by DGMs (if any)."),
+          								shiny::p("Conversely, the following plots are supported for summary statistics:"),
+          								shiny::tags$ul(
+          									shiny::tags$li("plots of summary statistics with confidence intervals based on Monte Carlo standard errors. There are three types of this plot: bar plots, forest plots, and lolly plots;"),
+          									shiny::tags$li("heat plots of summary statistics: these plots are mosaic plots where the factor on the x-axis is represented by methods (if defined) and the factor on the y-axis is represented by a DGM, as selected by the user. Each tile of the mosaic plot is coloured according to the value of a given summary statistic, with a red colour representing values above the target value and a blue colour representing values below the target. The target will depend on the summary statistic selected;"),
+          									shiny::tags$li("zip plots for visually explaining the summary statistic coverage by plotting the confidence intervals directly.")
+          								),
+          								shiny::p("Each plot can be customised and exported for use in manuscript, reports, presentations via the Customise plot tab. In terms of customisation, it is possible to:"),
+          								shiny::tags$ol(
+          									shiny::tags$li("define a custom label for the x-axis and the y-axis;"),
+          									shiny::tags$li("change the overall appearance of the plot by applying one of the predefined themes.")
+          								),
+          								shiny::p("In terms of exporting plots, it is possible to define the width, height, and resolution of the plot to export, and the format of the file to export. To suit a wide variety of possible use cases, INTEREST supports several image formats: among others, pdf, png, svg, and eps.")
+          								),
           shiny::tabPanel(
             title = "Plot themes",
             shiny::p(
@@ -508,7 +527,7 @@ body <- shinydashboard::dashboardBody(
               shiny::tags$li(
                 shiny::em("Viridis"),
                 ": a theme based on the viridis colour palette created by",
-
+                shiny::tags$a(href = "https://github.com/stefanv", "Stéfan van der Walt"),
                 "and",
                 shiny::tags$a(href = "https://github.com/njsmith", "Nathaniel Smith"),
                 "for the Python",
