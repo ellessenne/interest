@@ -1,5 +1,5 @@
 Package: interest
-Version: 0.0.1-9004
+Version: 0.0.2-9000
 Title: Interactively Explore Results from Simulation Studies
 Description: Explore results from simulation studies interactively using the shiny 
   app INTEREST. INTEREST stands for INteractive Tool for Exploring REsults from 
@@ -21,10 +21,10 @@ Imports:
  ggthemes,
  haven,
  labelled,
- naniar (>= 0.3.1),
+ naniar (>= 0.4.2),
  readr,
  rlang,
- rsimsum (>= 0.3.3),
+ rsimsum (>= 0.5.2),
  shiny,
  shinydashboard,
  tidyr,
@@ -36,7 +36,7 @@ URL: https://github.com/ellessenne/interest
 BugReports: https://github.com/ellessenne/interest/issues
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 Encoding: UTF-8
 LazyData: true
 ByteCompile: true

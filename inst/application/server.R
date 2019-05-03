@@ -207,7 +207,7 @@ function(input, output, session) {
     } else {
       out <- naniar::miss_var_summary(subdata)
     }
-    names(out)[(length(names(out)) - 3):length(names(out))] <- c("Variable", "N. missing", "% Missing", "Cumulative N. missing")
+    names(out)[(length(names(out)) - 2):length(names(out))] <- c("N. missing", "% Missing", "Cumulative N. missing")
     out
   })
   # Make DT of missing data table
@@ -239,7 +239,16 @@ function(input, output, session) {
         methodvar = input$defineMethod,
         ref = input$defineRefMethod,
         by = input$defineBy,
-        x = TRUE
+        x = TRUE,
+        dropbig = input$rsimsumDropbig,
+        control = list(
+          mcse = input$includeMCSE,
+          level = input$rsimsumLevel,
+          na.rm = input$rsimsum.na.rm,
+          dropbig.max = input$rsimsumDropbig.max,
+          dropbig.semax = input$rsimsumDropbig.semax,
+          dropbig.robust = input$rsimsumDropbig.robust
+        )
       )
     } else if (input$defineMethod != "" & is.null(input$defineBy)) {
       s <- rsimsum::simsum(
@@ -249,7 +258,16 @@ function(input, output, session) {
         se = input$defineSe,
         methodvar = input$defineMethod,
         ref = input$defineRefMethod,
-        x = TRUE
+        x = TRUE,
+        dropbig = input$rsimsumDropbig,
+        control = list(
+          mcse = input$includeMCSE,
+          level = input$rsimsumLevel,
+          na.rm = input$rsimsum.na.rm,
+          dropbig.max = input$rsimsumDropbig.max,
+          dropbig.semax = input$rsimsumDropbig.semax,
+          dropbig.robust = input$rsimsumDropbig.robust
+        )
       )
     } else if (input$defineMethod == "" & !is.null(input$defineBy)) {
       s <- rsimsum::simsum(
@@ -258,7 +276,16 @@ function(input, output, session) {
         true = input$defineTrue,
         se = input$defineSe,
         by = input$defineBy,
-        x = TRUE
+        x = TRUE,
+        dropbig = input$rsimsumDropbig,
+        control = list(
+          mcse = input$includeMCSE,
+          level = input$rsimsumLevel,
+          na.rm = input$rsimsum.na.rm,
+          dropbig.max = input$rsimsumDropbig.max,
+          dropbig.semax = input$rsimsumDropbig.semax,
+          dropbig.robust = input$rsimsumDropbig.robust
+        )
       )
     } else {
       s <- rsimsum::simsum(
@@ -266,7 +293,16 @@ function(input, output, session) {
         estvarname = input$defineEstvarname,
         true = input$defineTrue,
         se = input$defineSe,
-        x = TRUE
+        x = TRUE,
+        dropbig = input$rsimsumDropbig,
+        control = list(
+          mcse = input$includeMCSE,
+          level = input$rsimsumLevel,
+          na.rm = input$rsimsum.na.rm,
+          dropbig.max = input$rsimsumDropbig.max,
+          dropbig.semax = input$rsimsumDropbig.semax,
+          dropbig.robust = input$rsimsumDropbig.robust
+        )
       )
     }
     s
@@ -274,90 +310,33 @@ function(input, output, session) {
 
   summ <- shiny::reactive({
     shiny::req(data())
-    s <- summary(s())
-    s[["summ"]] <- rsimsum::get_data(s)[rsimsum::get_data(s)[["stat"]] %in% input$summaryStatisticsWhich, ]
-    if (input$defineMethod != "") {
-      s[["summ"]][[input$defineMethod]] <- factor(rsimsum::get_data(s)[[input$defineMethod]])
-    }
-    if (input$defineRefMethod != "") {
-      s[["summ"]][[input$defineMethod]] <- relevel(rsimsum::get_data(s)[[input$defineMethod]], ref = input$defineRefMethod)
-    }
-    if (!is.null(input$defineBy)) {
-      for (w in input$defineBy)
-        s[["summ"]][[w]] <- factor(rsimsum::get_data(s)[[w]])
-    }
+    s <- summary(s(), stats = input$summaryStatisticsWhich)
     return(s)
   })
 
   ### Make summary table pretty for printing
   prettySumm <- shiny::reactive({
     shiny::req(data())
-    s <- rsimsum::get_data(summ())
-    if (input$includeMCSE) {
-      s[["est"]] <- paste0(sprintf(paste0("%.", input$significantDigits, "f"), s[["est"]]), " (", sprintf(paste0("%.", input$significantDigits, "f"), s[["mcse"]]), ")")
-    } else {
-      s[["est"]] <- sprintf(paste0("%.", input$significantDigits, "f"), s[["est"]])
+    # Format summary table
+    s <- rsimsum:::.format(x = summ(), digits = input$significantDigits, mcse = input$includeMCSE)
+    # Make names of the summary table
+    names(s$summ)[names(s$summ) == "description"] <- "Performance Measure"
+    names(s$summ)[names(s$summ) == "est"] <- "Estimate"
+    # Order data.frame with results
+    s$summ <- rsimsum:::.order(data = s$summ, by = c("Performance Measure", s$methodvar, s$by))
+    # If methodvar, put them side by side
+    if (!is.null(s$methodvar)) {
+      s$summ <- rsimsum:::.bind_methods(data = s$summ, by = s$by, methodvar = s$methodvar)
     }
-    s[["mcse"]] <- NULL
-    s[["lower"]] <- NULL
-    s[["upper"]] <- NULL
     # Only selected factors if `by` is specified
     if (!is.null(input[["defineBy"]])) {
-      s <- split(s, f = lapply(input$defineBy, function(f)
-        s[[f]]))[[paste(sapply(input$defineBy, function(x)
-        input[[paste0("table", x)]]), collapse = ".")]]
+      s$summ <- split(s$summ, f = lapply(input$defineBy, function(f) s$summ[[f]]))[[paste(sapply(input$defineBy, function(x) input[[paste0("table", x)]]), collapse = ".")]]
       for (i in input$defineBy) {
-        s[[i]] <- NULL
+        s$summ[[i]] <- NULL
       }
     }
-
-    # Spread over `method` if `method` is specified
-    if (input$defineMethod != "") {
-      s <- tidyr::spread(
-        data = s,
-        key = !! input$defineMethod,
-        value = est
-      )
-    }
-
-    # Factorise summary statistics
-    s$stat <- factor(
-      s$stat,
-      levels = c(
-        "nsim",
-        "thetamean",
-        "thetamedian",
-        "se2mean",
-        "se2median",
-        "bias",
-        "empse",
-        "mse",
-        "relprec",
-        "modelse",
-        "relerror",
-        "cover",
-        "bccover",
-        "power"
-      ),
-      labels = c(
-        "Simulations with non-missing estimates/SEs",
-        "Average point estimate",
-        "Median point estimate",
-        "Average standard error",
-        "Median standard error",
-        "Bias in point estimate",
-        "Empirical standard error",
-        "Mean squared error",
-        "% gain in precision relative to reference method",
-        "Model-based standard error",
-        "Relative % error in standard error",
-        "Coverage of nominal 95% CI",
-        "Bias corrected coverage of nominal 95% CI",
-        "Power of 5% level test"
-      )
-    )
-    s <- dplyr::arrange(s, stat)
-    return(s)
+    # Return
+    return(s$summ)
   })
 
   ### Make a data table with the summary statistics
@@ -426,77 +405,6 @@ function(input, output, session) {
     }
   )
 
-  # Update options for coloring b_vs_se plot
-  shiny::observe({
-    shiny::req(data())
-    if (!is.null(input[["defineMethod"]]) &
-      !is.null(input[["defineBy"]])) {
-      shiny::updateSelectInput(
-        session,
-        inputId = "plotEstimatesColorMethodBy",
-        choices = c("None", input$defineMethod, input$defineBy)
-      )
-    } else if (!is.null(input[["defineMethod"]]) &
-      is.null(input[["defineBy"]])) {
-      shiny::updateSelectInput(
-        session,
-        inputId = "plotEstimatesColorMethodBy",
-        choices = c("None", input$defineMethod)
-      )
-    } else if (is.null(input[["defineMethod"]]) &
-      !is.null(input[["defineBy"]])) {
-      shiny::updateSelectInput(
-        session,
-        inputId = "plotEstimatesColorMethodBy",
-        choices = c("None", input$defineBy)
-      )
-    }
-  })
-
-  # Make facets selectors
-  output$plotFacet <- shiny::renderUI({
-    shiny::validate(
-      shiny::need(
-        !is.null(input$defineBy),
-        "Facet selectors not available when no `by` factors are specified."
-      )
-    )
-    shiny::tagList(
-      shiny::selectInput(
-        inputId = "plotFacetX",
-        label = "Faceting variables (x-axis):",
-        choices = names(data())[names(data()) %in% c(input$defineMethod, input$defineBy)],
-        multiple = TRUE
-      ),
-      shiny::selectInput(
-        inputId = "plotFacetY",
-        label = "Faceting variables (y-axis):",
-        choices = names(data())[names(data()) %in% c(input$defineMethod, input$defineBy)],
-        multiple = TRUE
-      )
-    )
-  })
-
-  # Remove "None" option from selectOrFacet if "by" factors are defined
-  shiny::observe({
-    shiny::req(data())
-    if (!is.null(input[["defineBy"]])) {
-      shiny::updateRadioButtons(
-        session,
-        inputId = "selectOrFacet",
-        choices = c("Select DGM", "Facet"),
-        selected = "Select DGM"
-      )
-    } else {
-      shiny::updateRadioButtons(
-        session,
-        inputId = "selectOrFacet",
-        choices = c("None", "Select DGM", "Facet"),
-        selected = "None"
-      )
-    }
-  })
-
   ### Update available summary statistics for plotting
   shiny::observe({
     shiny::req(data())
@@ -505,18 +413,6 @@ function(input, output, session) {
       inputId = "selectPlotSummaryStat",
       choices = SummaryStatistics[SummaryStatistics %in% input$summaryStatisticsWhich]
     )
-  })
-
-  ### Update Y factors for heat plots
-  shiny::observe({
-    shiny::req(data())
-    if (!is.null(input$defineBy)) {
-      shiny::updateSelectInput(
-        session,
-        inputId = "selectHeatY",
-        choices = input$defineBy
-      )
-    }
   })
 
   ### Update select summary to 'coverage' if zip plot
@@ -534,37 +430,15 @@ function(input, output, session) {
   ### Make estimates plot
   makePlotEstimates <- function() {
     shiny::req(data())
+    shiny::validate(
+      shiny::need(input$defineMethod != "", message = "Plots not meaningful if there are no methods to compare :(")
+    )
+
     df <- data()
     if (input$defineMethod != "") df[[input$defineMethod]] <- factor(df[[input$defineMethod]])
 
     # Make plots
-    plot <- switch(input$selectPlotEstimates,
-      "b_vs_se" = {
-        rsimsum::pattern(s())
-      },
-      "b_vs_b" = {},
-      "se_vs_se" = {},
-      "dist_b" = {
-        if (input$defineMethod == "") {
-          ggplot2::ggplot(df, ggplot2::aes_string(x = input$defineEstvarname)) +
-            ggplot2::geom_density(alpha = 1 / 3)
-        } else {
-          ggplot2::ggplot(df, ggplot2::aes_string(x = input$defineEstvarname, color = input$defineMethod, fill = input$defineMethod)) +
-            ggplot2::geom_density(alpha = 1 / 3)
-        }
-      },
-      "dist_se" = {
-        if (input$defineMethod == "") {
-          ggplot2::ggplot(df, ggplot2::aes_string(x = input$defineSe)) +
-            ggplot2::geom_density(alpha = 1 / 3)
-        } else {
-          ggplot2::ggplot(df, ggplot2::aes_string(x = input$defineSe, color = input$defineMethod, fill = input$defineMethod)) +
-            ggplot2::geom_density(alpha = 1 / 3)
-        }
-      }
-    )
-
-    if (!is.null(input$defineBy)) plot <- plot + ggplot2::facet_wrap(facets = input$defineBy, labeller = ggplot2::label_both)
+    plot <- ggplot2::autoplot(s(), type = input$selectPlotEstimates)
 
     # Custom axis label
     if (input$customXlab != "") plot <- plot + ggplot2::labs(x = input$customXlab)
@@ -591,75 +465,8 @@ function(input, output, session) {
       shiny::need(input$defineMethod != "", message = "Plots not meaningful if there are no methods to compare :(")
     )
 
-    # Infer target if sstat = 'nsim'
-    if (input$selectPlotSummaryStat == "nsim") {
-      vars <- c()
-      if (input$defineMethod != "") vars <- c(vars, input$defineMethod)
-      if (!is.null(input$defineBy)) vars <- c(vars, input$defineBy)
-      nsim_target <- max(dplyr::summarise(dplyr::group_by_at(data(), .vars = vars), n = n())$n)
-    }
-
     # Make plots
-    plot <- switch(input$selectPlotSummary,
-      "forest" = {
-        if (input$selectPlotSummaryStat == "nsim") {
-          if (!is.null(input$defineBy)) {
-            rsimsum::forest(obj = s(), sstat = input$selectPlotSummaryStat, by = input$defineBy, target = ifelse(input$selectPlotSummaryStat == "nsim", nsim_target, NULL))
-          } else {
-            rsimsum::forest(obj = s(), sstat = input$selectPlotSummaryStat, target = ifelse(input$selectPlotSummaryStat == "nsim", nsim_target, NULL))
-          }
-        } else {
-          if (!is.null(input$defineBy)) {
-            rsimsum::forest(obj = s(), sstat = input$selectPlotSummaryStat, by = input$defineBy)
-          } else {
-            rsimsum::forest(obj = s(), sstat = input$selectPlotSummaryStat)
-          }
-        }
-      },
-      "bar" = {
-        if (input$selectPlotSummaryStat == "nsim") {
-          if (!is.null(input$defineBy)) {
-            rsimsum::bar(obj = s(), sstat = input$selectPlotSummaryStat, by = input$defineBy, target = ifelse(input$selectPlotSummaryStat == "nsim", nsim_target, NULL))
-          } else {
-            rsimsum::bar(obj = s(), sstat = input$selectPlotSummaryStat, target = ifelse(input$selectPlotSummaryStat == "nsim", nsim_target, NULL))
-          }
-        } else {
-          if (!is.null(input$defineBy)) {
-            rsimsum::bar(obj = s(), sstat = input$selectPlotSummaryStat, by = input$defineBy)
-          } else {
-            rsimsum::bar(obj = s(), sstat = input$selectPlotSummaryStat)
-          }
-        }
-      },
-      "lolly" = {
-        if (input$selectPlotSummaryStat == "nsim") {
-          if (!is.null(input$defineBy)) {
-            rsimsum::lolly(obj = s(), sstat = input$selectPlotSummaryStat, by = input$defineBy, target = ifelse(input$selectPlotSummaryStat == "nsim", nsim_target, NULL))
-          } else {
-            rsimsum::lolly(obj = s(), sstat = input$selectPlotSummaryStat, target = ifelse(input$selectPlotSummaryStat == "nsim", nsim_target, NULL))
-          }
-        } else {
-          if (!is.null(input$defineBy)) {
-            rsimsum::lolly(obj = s(), sstat = input$selectPlotSummaryStat, by = input$defineBy)
-          } else {
-            rsimsum::lolly(obj = s(), sstat = input$selectPlotSummaryStat)
-          }
-        }
-      },
-      "zip" = {
-        rsimsum::zip(s())
-      },
-      "heat" = {
-        shiny::validate(shiny::need(!is.null(input$defineBy), message = "Heat plots require DGMs... :("))
-        if (length(input$defineBy) == 1) {
-          if (input$selectPlotSummaryStat == "nsim") {
-            rsimsum::heat(s(), sstat = input$selectPlotSummaryStat, y = input$defineBy, text = input$textInHeat, target = nsim_target)
-          } else {
-            rsimsum::heat(s(), sstat = input$selectPlotSummaryStat, y = input$defineBy, text = input$textInHeat)
-          }
-        }
-      }
-    )
+    plot <- ggplot2::autoplot(summary(s()), type = input$selectPlotSummary, stats = input$selectPlotSummaryStat)
 
     # Custom axis label
     if (input$customXlab != "") plot <- plot + ggplot2::labs(x = input$customXlab)
