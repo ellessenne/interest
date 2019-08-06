@@ -71,7 +71,13 @@ body <- shinydashboard::dashboardBody(
       tabName = "homeTab",
       shiny::fluidRow(
         shinydashboard::box(
-          shiny::HTML(paste0("<div class='jumbotron' style='background:white;'><div class='container'><h1>Welcome to INTEREST!</h1><p>INTEREST is a Shiny app that allows exploring results from Monte Carlo simulation studies interactively and producing plots and tables ready to use in manuscripts and presentations.</p><p>INTEREST is also great for disseminating and inspecting results from simulation studies published in the literature where the dataset with the results is openly available.</p></div></div>")),
+          shiny::HTML(paste0("<div class='jumbotron' style='background:white;'>
+          <div class='container'>
+          <h1>Welcome to INTEREST!</h1>
+          <p>INTEREST is a Shiny app that allows exploring results from Monte Carlo simulation studies interactively and producing plots and tables ready to use in manuscripts and presentations.</p>
+          <p>INTEREST is also great for disseminating and inspecting results from simulation studies published in the literature where the dataset with the results is openly available.</p>
+          </div>
+          </div>")),
           solidHeader = TRUE,
           width = 12
         )
