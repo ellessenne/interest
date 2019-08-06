@@ -1,15 +1,57 @@
 @import url('https://rsms.me/inter/inter.css');
 
-.main-header .logo {
-	font-family: "Inter", sans-serif;
-}
-
 html {
 	font-family: 'Inter', sans-serif;
 }
 
+body {
+	font-family: 'Inter', sans-serif;
+}
+
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+	font-family: 'Inter', sans-serif;
+}
+
 @supports (font-variation-settings: normal) {
-  html {
-  	font-family: 'Inter var', sans-serif;
-  }
+	html {
+		font-family: 'Inter var', sans-serif;
+	}
+	body {
+		font-family: 'Inter var', sans-serif;
+	}
+	.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+		font-family: 'Inter var', sans-serif;
+	}
+}
+
+.skin-blue .main-header .navbar {
+	background-color: #424242;
+}
+
+.main-header .logo {
+	font-family: 'Inter', sans-serif;
+}
+
+.skin-blue .main-header .logo:hover {
+	background-color: #757575;
+}
+
+.skin-blue .main-header .logo {
+	background-color: #757575;
+}
+
+.skin-blue .sidebar-menu>li.active>a, .skin-blue .sidebar-menu>li:hover>a {
+	border-left-color: #757575;
+}
+
+.content-wrapper, .right-side {
+	background-color: #EEEEEE;
+}
+
+.skin-blue .main-header .navbar .sidebar-toggle:hover {
+	background-color: #757575;
+}
+
+.nav-tabs-custom>.nav-tabs>li.active {
+	border-top-color: #424242;
 }
