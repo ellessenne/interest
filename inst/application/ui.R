@@ -288,7 +288,8 @@ body <- shinydashboard::dashboardBody(
                 "Forest plot" = "forest",
                 "Lolly plot" = "lolly",
                 "Zip plot" = "zip",
-                "Heat plot" = "heat"
+                "Heat plot" = "heat",
+                "Nested loop plot" = "nlp"
               )
             ),
             shiny::plotOutput(outputId = "outPlotSummary", height = "500px"),
