@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 options(width = 100)
 ```
 
-# INTEREST
+# INTEREST <img src="man/figures/hex.png" width = "150" align="right" />
 
 INTEREST, acronym for **IN**teractive **T**ool for **E**xploring **RE**sults from **S**imulation s**T**udies, is an interactive web app developed using R and [`shiny`](https://shiny.rstudio.com/). It allows exploring results from simulation studies interactively.
 
