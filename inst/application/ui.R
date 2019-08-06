@@ -65,9 +65,7 @@ sidebar <- shinydashboard::dashboardSidebar(
 )
 
 body <- shinydashboard::dashboardBody(
-  shiny::tags$head(
-    shiny::tags$link(rel = "stylesheet", type = "text/css", href = "theme.css")
-  ),
+  shiny::includeCSS("www/theme.css"),
   shinydashboard::tabItems(
     shinydashboard::tabItem(
       tabName = "homeTab",
