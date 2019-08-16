@@ -27,8 +27,8 @@ sidebar <- shinydashboard::dashboardSidebar(
       icon = shiny::icon("question-circle")
     ),
     shinydashboard::menuItem(
-      "Summary statistics",
       tabName = "summaryStatisticsTab",
+      "Performance measures",
       icon = shiny::icon("list-ol")
     ),
     shinydashboard::menuItem(
@@ -52,9 +52,9 @@ sidebar <- shinydashboard::dashboardSidebar(
       icon = shiny::icon("commenting")
     ),
     shinydashboard::menuItem(
-      "Issues and bug report",
+      "Report issues and bug",
       href = "https://github.com/ellessenne/interest/issues/",
-      icon = icon("exclamation-triangle ")
+      icon = icon("bug ")
     ),
     shinydashboard::menuItem(
       "Source code",
@@ -198,14 +198,14 @@ body <- shinydashboard::dashboardBody(
       )
     ),
     #########################################################
-    ### Summary statistics tab
+    ### Performance measures tab
     shinydashboard::tabItem(
       tabName = "summaryStatisticsTab",
       shiny::fluidRow(
         shinydashboard::tabBox(
           width = 12,
           shiny::tabPanel(
-            "View summary statistics",
+            "View",
             shiny::uiOutput(outputId = "summaryStatisticsSelectFactors"),
             shiny::dataTableOutput(outputId = "summaryStatisticsDataTable"),
             shiny::hr(),
@@ -216,7 +216,7 @@ body <- shinydashboard::dashboardBody(
             shiny::verbatimTextOutput(outputId = "summaryStatisticsLaTeX")
           ),
           shiny::tabPanel(
-            "Export summary statistics",
+            "Export",
             shiny::p(
               "If you want to export the table as visualised in the",
               shiny::em("View summary statistics"),
@@ -279,10 +279,10 @@ body <- shinydashboard::dashboardBody(
             shiny::uiOutput(outputId = "plotEstimatesButton")
           ),
           shiny::tabPanel(
-            title = "Summary statistics plots",
+            title = "Performance measures plots",
             shiny::selectInput(
               inputId = "selectPlotSummaryStat",
-              label = "Select summary statistic:",
+              label = "Select performance measure:",
               choices = ""
             ),
             shiny::selectInput(
@@ -313,7 +313,7 @@ body <- shinydashboard::dashboardBody(
             "Display options",
             shiny::selectInput(
               inputId = "summaryStatisticsWhich",
-              label = "Summary statistics of interest:",
+              label = "Performance measures of interest:",
               choices = c(
                 "Non-missing estimates/SEs" = "nsim",
                 "Average point estimate" = "thetamean",
@@ -488,13 +488,13 @@ body <- shinydashboard::dashboardBody(
             shiny::p("The true value of the estimand must be specified by the user. Additionally, a dataset could contain the following variables:"),
             shiny::tags$ul(
               shiny::tags$li("A variable representing methods compared with the simulation study;"),
-              shiny::tags$li("A list of variables representing the various data-generating factors [DGMs], e.g. sample size, true distribution, etc.")
+              shiny::tags$li("A list of variables representing the various data-generating factors (DGMs), e.g. sample size, true distribution, etc.")
             ),
             shiny::p("After uploading a dataset to INTEREST it will be possible to assign each variable to estimands, SEs, etc.")
           ),
           shiny::tabPanel(
-            title = "Summary statistics and Monte Carlo standard errors",
-            shiny::p("INTEREST supports the following summary statistics:"),
+            title = "Performance measures and Monte Carlo standard errors",
+            shiny::p("INTEREST supports the following performance measures:"),
             shiny::tags$ul(
               shiny::tags$li("Bias, which quantifies whether the estimator targets the true value on average;"),
               shiny::tags$li("Empirical standard error, estimating the standard deviation of the estimated values over all replications"),
@@ -506,8 +506,8 @@ body <- shinydashboard::dashboardBody(
               shiny::tags$li("Bias-eliminated coverage, a useful measure as under coverage may be induced by bias;"),
               shiny::tags$li("Power of a significance test at a given level alpha.")
             ),
-            shiny::p("Each summary statistic comes with its Monte Carlo standard error by default, to help understanding the role of chance in results of simulation studies."),
-            shiny::p("Further information on each summary statistics and Monte Carlo standard errors, including formulae, can be found here:"),
+            shiny::p("Each performance measure comes with its Monte Carlo standard error by default, to help understanding the role of chance in results of simulation studies."),
+            shiny::p("Further information on each performance measure and Monte Carlo standard errors, including formulae, can be found here:"),
             shiny::tags$ul(
               shiny::tags$li("White, I.R. 2010.", shiny::em("simsum: Analyses of simulation studies including Monte Carlo error"), "The Stata Journal 10(3): 369-385 <", shiny::tags$a(href = "http://www.stata-journal.com/article.html?article=st0200", "http://www.stata-journal.com/article.html?article=st0200"), ">"),
               shiny::tags$li("Morris, T.P, White, I.R., and Crowther, M.J. 2019.", shiny::em("Using simulation studies to evaluate statistical methods"), "<", shiny::tags$a(href = "https://onlinelibrary.wiley.com/doi/full/10.1002/sim.8086", "https://onlinelibrary.wiley.com/doi/full/10.1002/sim.8086"), ">")
@@ -519,7 +519,7 @@ body <- shinydashboard::dashboardBody(
             shiny::p("Plots produced by INTEREST can be categorised into two broad groups:"),
             shiny::tags$ol(
               shiny::tags$li("plots of estimated values (and standard errors);"),
-              shiny::tags$li("plots of summary statistics.")
+              shiny::tags$li("plots of estimated performance.")
             ),
             shiny::p("Plots for estimated values and standard errors are:"),
             shiny::tags$ul(
@@ -528,11 +528,12 @@ body <- shinydashboard::dashboardBody(
               shiny::tags$li("Ridgelines plot with the method-wise comparison of the distribution of point estimates (or standard errors).")
             ),
             shiny::p("Each plot will include colours defined by method (if any) and automatic faceting by DGMs (if any)."),
-            shiny::p("Conversely, the following plots are supported for summary statistics:"),
+            shiny::p("Conversely, the following plots are supported for estimated performance:"),
             shiny::tags$ul(
-              shiny::tags$li("plots of summary statistics with confidence intervals based on Monte Carlo standard errors. There are two types of this plot: forest plots and lolly plots;"),
-              shiny::tags$li("heat plots of summary statistics: these plots are mosaic plots where the factor on the x-axis is represented by methods (if defined) and the factor on the y-axis is represented by a DGM, as selected by the user;"),
-              shiny::tags$li("zip plots for visually explaining the summary statistic coverage by plotting the confidence intervals directly.")
+              shiny::tags$li("Plots of performance measures with confidence intervals based on Monte Carlo standard errors. There are two types of this plot: forest plots and lolly plots;"),
+              shiny::tags$li("Heat plots of performance measures: these plots are mosaic plots where the factor on the x-axis is represented by methods (if defined) and the factor on the y-axis is represented by a DGM, as selected by the user;"),
+              shiny::tags$li("Zip plots for visually explaining coverage probability by plotting the confidence intervals directly;"),
+              shiny::tags$li("Nested loop plots, useful to visualise performance measures from simulation studies with many DGMs at once")
             ),
             shiny::p("Each plot can be customised and exported for use in manuscript, reports, presentations via the Customise plot tab. In terms of customisation, it is possible to:"),
             shiny::tags$ol(
