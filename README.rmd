@@ -58,10 +58,10 @@ The app should now launch in your browser.
 
 The workflow of INTERACT is simple: 
 
-1. load your data and define variables representing point estimates, standard errors, methods, and so on;
-1. summary statistics are computed automatically;
-1. tables and plots are produced automatically, and can be customised and explored interactively;
-1. tables and plots can be exported for later use.
+1. Load your data and define variables representing point estimates, standard errors, methods, and so on;
+1. Performance measures are estimated automatically;
+1. Tables and plots are produced automatically, and can be customised and explored interactively;
+1. Tables and plots can be exported for later use.
 
 # Additional material on INTEREST
 
