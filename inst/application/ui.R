@@ -52,7 +52,7 @@ sidebar <- shinydashboard::dashboardSidebar(
       icon = shiny::icon("commenting")
     ),
     shinydashboard::menuItem(
-      "Report issues and bug",
+      "Report issues and bugs",
       href = "https://github.com/ellessenne/interest/issues/",
       icon = icon("bug ")
     ),
