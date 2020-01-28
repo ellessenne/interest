@@ -4,8 +4,7 @@
 \alias{get_example_data}
 \title{Get example data}
 \usage{
-get_example_data(dataset = c("MIsim", "relhaz", "frailty"),
-  where = ".")
+get_example_data(dataset = c("MIsim", "relhaz", "frailty"), where = ".")
 }
 \arguments{
 \item{dataset}{The dataset to copy. Possible choices are: \code{MIsim}, \code{relhaz}, \code{frailty}. More information on each dataset can be obtained by typing \code{?interest::MIsim}, \code{?interest::relhaz}, or \code{?interest::frailty} in the R console.}
