@@ -1,6 +1,8 @@
 ## global.R script ##
 
 SummaryStatistics <- c("Simulations with non-missing estimates/SEs" = "nsim", "Average point estimate" = "thetamean", "Median point estimate" = "thetamedian", "Average standard error" = "se2mean", "Median standard error" = "se2median", "Bias in point estimate" = "bias", "Empirical standard error" = "empse", "Mean squared error" = "mse", "% gain in precision relative to reference method" = "relprec", "Model-based standard error" = "modelse", "Relative % error in standard error" = "relerror", "Coverage of nominal 95% CI" = "cover", "Bias-eliminated coverage of nominal 95% CI" = "becover", "Power of 5% level test" = "power")
+# Increase max upload size
+options(shiny.maxRequestSize = 50 * 1024^2)
 
 # apply_* functions are here as long as the interest package is not on CRAN
 apply_colour <- function(ggobject, theme) {
