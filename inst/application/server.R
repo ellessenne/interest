@@ -85,41 +85,46 @@ function(input, output, session) {
     shiny::validate(
       shiny::need(
         !is.null(input$defineBy),
-        "Factors selectors not available when no `by` factors are specified."
+        "Factors selectors not available when no DGMs are specified."
       )
     )
-    lapply(input$defineBy, function(x)
+    lapply(input$defineBy, function(x) {
       shiny::selectInput(
         inputId = paste0("table", x),
         label = x,
         choices = sort(unique(data()[[x]]))
-      ))
+      )
+    })
   })
   output$plotSelectFactors <- shiny::renderUI({
     shiny::validate(
       shiny::need(
         !is.null(input$defineBy),
-        "Factors selectors not available when no `by` factors are specified."
+        "Factors selectors not available when no DGMs are specified."
       )
     )
-    lapply(input$defineBy, function(x)
+    lapply(input$defineBy, function(x) {
       shiny::selectInput(
         inputId = paste0("plot", x),
         label = x,
         choices = sort(unique(data()[[x]]))
-      ))
+      )
+    })
   })
 
   ### DT with original dataset in the "View uploaded data" tab
-  output$uploadedDataTable <- shiny::renderDataTable({
-    shiny::validate(
-      shiny::need(
-        !is.null(data()),
-        "Upload a dataset first, via the 'Data' tab."
+  output$uploadedDataTable <- DT::renderDT(
+    {
+      shiny::validate(
+        shiny::need(
+          !is.null(data()),
+          "Upload a dataset first, via the 'Data' tab."
+        )
       )
-    )
-    data()
-  }, options = list(pageLength = 15))
+      data()
+    },
+    options = list(pageLength = 20)
+  )
 
 
   ### Missing data plots
@@ -141,7 +146,7 @@ function(input, output, session) {
         plot <- switch(input$missingDataPlotType,
           "barsn" = naniar:::gg_miss_var_create(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = c(input$defineMethod, input$defineBy))), show_pct = FALSE) + ggplot2::facet_grid(reformulate(input$defineMethod, input$defineBy), labeller = ggplot2::label_both),
           "barsp" = naniar:::gg_miss_var_create(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = c(input$defineMethod, input$defineBy))), show_pct = TRUE) + ggplot2::facet_grid(reformulate(input$defineMethod, input$defineBy), labeller = ggplot2::label_both),
-          "amount" = naniar::vis_miss(data()),
+          "amount" = naniar::vis_miss(data(), warn_large_data = FALSE),
           "scatter" = ggplot2::ggplot(data(), ggplot2::aes_string(x = input$defineEstvarname, y = input$defineSe)) + naniar::geom_miss_point() + ggplot2::facet_grid(reformulate(input$defineMethod, input$defineBy), labeller = ggplot2::label_both),
           "heat" = ggplot2::ggplot(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = c(input$defineMethod, input$defineBy))), ggplot2::aes_string(x = input$defineMethod, y = "variable", fill = "pct_miss")) + ggplot2::geom_tile() + ggplot2::scale_fill_gradient(low = "#56B4E9", high = "#D55E00") + ggplot2::facet_wrap(facets = input$defineBy, labeller = ggplot2::label_both)
         )
@@ -211,9 +216,12 @@ function(input, output, session) {
     out
   })
   # Make DT of missing data table
-  output$missingDataTable <- shiny::renderDataTable({
-    missingDataTable()
-  }, options = list(pageLength = 10))
+  output$missingDataTable <- DT::renderDT(
+    {
+      missingDataTable()
+    },
+    options = list(pageLength = 20)
+  )
   # Make LaTeX version of missing data table
   output$missingDataLaTeXTable <- shiny::renderPrint({
     shiny::req(data())
@@ -230,6 +238,17 @@ function(input, output, session) {
   ### Make summary statistics, and summary of 'simsum' object
   s <- reactive({
     shiny::req(data())
+
+    # Control estimation
+    ctrl <- list(
+      mcse = input$includeMCSE,
+      level = input$rsimsumLevel,
+      na.rm = input$rsimsum.na.rm,
+      dropbig.max = input$rsimsumDropbig.max,
+      dropbig.semax = input$rsimsumDropbig.semax,
+      dropbig.robust = input$rsimsumDropbig.robust
+    )
+
     if (input$defineMethod != "" & !is.null(input$defineBy)) {
       s <- rsimsum::simsum(
         data = data(),
@@ -241,14 +260,7 @@ function(input, output, session) {
         by = input$defineBy,
         x = TRUE,
         dropbig = input$rsimsumDropbig,
-        control = list(
-          mcse = input$includeMCSE,
-          level = input$rsimsumLevel,
-          na.rm = input$rsimsum.na.rm,
-          dropbig.max = input$rsimsumDropbig.max,
-          dropbig.semax = input$rsimsumDropbig.semax,
-          dropbig.robust = input$rsimsumDropbig.robust
-        )
+        control = ctrl
       )
     } else if (input$defineMethod != "" & is.null(input$defineBy)) {
       s <- rsimsum::simsum(
@@ -260,14 +272,7 @@ function(input, output, session) {
         ref = input$defineRefMethod,
         x = TRUE,
         dropbig = input$rsimsumDropbig,
-        control = list(
-          mcse = input$includeMCSE,
-          level = input$rsimsumLevel,
-          na.rm = input$rsimsum.na.rm,
-          dropbig.max = input$rsimsumDropbig.max,
-          dropbig.semax = input$rsimsumDropbig.semax,
-          dropbig.robust = input$rsimsumDropbig.robust
-        )
+        control = ctrl
       )
     } else if (input$defineMethod == "" & !is.null(input$defineBy)) {
       s <- rsimsum::simsum(
@@ -278,14 +283,7 @@ function(input, output, session) {
         by = input$defineBy,
         x = TRUE,
         dropbig = input$rsimsumDropbig,
-        control = list(
-          mcse = input$includeMCSE,
-          level = input$rsimsumLevel,
-          na.rm = input$rsimsum.na.rm,
-          dropbig.max = input$rsimsumDropbig.max,
-          dropbig.semax = input$rsimsumDropbig.semax,
-          dropbig.robust = input$rsimsumDropbig.robust
-        )
+        control = ctrl
       )
     } else {
       s <- rsimsum::simsum(
@@ -295,14 +293,7 @@ function(input, output, session) {
         se = input$defineSe,
         x = TRUE,
         dropbig = input$rsimsumDropbig,
-        control = list(
-          mcse = input$includeMCSE,
-          level = input$rsimsumLevel,
-          na.rm = input$rsimsum.na.rm,
-          dropbig.max = input$rsimsumDropbig.max,
-          dropbig.semax = input$rsimsumDropbig.semax,
-          dropbig.robust = input$rsimsumDropbig.robust
-        )
+        control = ctrl
       )
     }
     s
@@ -340,10 +331,14 @@ function(input, output, session) {
   })
 
   ### Make a data table with the summary statistics
-  output$summaryStatisticsDataTable <- shiny::renderDataTable({
-    shiny::req(data())
-    s <- prettySumm()
-  })
+  output$summaryStatisticsDataTable <- DT::renderDT(
+    {
+      shiny::req(data())
+      s <- prettySumm()
+    },
+    options = list(pageLength = 20, dom = "t"),
+    rownames = FALSE
+  )
 
   ### Make summary table in LaTeX
   output$summaryStatisticsLaTeX <- shiny::renderPrint({
@@ -361,8 +356,9 @@ function(input, output, session) {
   ### Update caption of LaTeX table with current `by` scenario, if specified
   shiny::observe({
     shiny::req(input$defineBy)
-    value <- paste(sapply(input$defineBy, function(x)
-      paste0(x, ": ", input[[paste0("table", x)]])), collapse = ", ")
+    value <- paste(sapply(input$defineBy, function(x) {
+      paste0(x, ": ", input[[paste0("table", x)]])
+    }), collapse = ", ")
     shiny::updateTextInput(session, "summaryStatisticsLaTeXCaption", value = value)
   })
 
@@ -431,7 +427,7 @@ function(input, output, session) {
   makePlotEstimates <- function() {
     shiny::req(data())
     shiny::validate(
-      shiny::need(input$defineMethod != "", message = "Plots not meaningful if there are no methods to compare :(")
+      shiny::need(input$defineMethod != "", message = "Plots not meaningful if there are no methods to compare.")
     )
 
     df <- data()
@@ -462,7 +458,8 @@ function(input, output, session) {
   makePlotSummary <- function() {
     shiny::req(data())
     shiny::validate(
-      shiny::need(input$defineMethod != "", message = "Plots not meaningful if there are no methods to compare :(")
+      shiny::need(input$defineMethod != "", message = "Plots not meaningful if there are no methods to compare."),
+      shiny::need(!(is.null(input$defineBy) & input$selectPlotSummary == "nlp"), message = "Nested loop plot not meaningful when no 'by' factors are defined.")
     )
 
     # Make plots

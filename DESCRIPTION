@@ -17,6 +17,7 @@ Depends:
 Imports:
  devtools,
  dplyr,
+ DT,
  ggplot2,
  ggthemes,
  haven,

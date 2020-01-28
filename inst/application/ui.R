@@ -169,7 +169,7 @@ body <- shinydashboard::dashboardBody(
         shinydashboard::box(
           width = 12,
           solidHeader = TRUE,
-          shiny::dataTableOutput(outputId = "uploadedDataTable")
+          DT::DTOutput(outputId = "uploadedDataTable")
         )
       )
     ),
@@ -189,7 +189,7 @@ body <- shinydashboard::dashboardBody(
           ),
           shiny::tabPanel(
             title = "Table of missing data",
-            shiny::dataTableOutput(outputId = "missingDataTable"),
+            DT::DTOutput(outputId = "missingDataTable"),
             shiny::hr(),
             shiny::textInput(inputId = "missingDataLaTeXTableCaption", label = "Table caption:"),
             shiny::verbatimTextOutput(outputId = "missingDataLaTeXTable")
@@ -207,7 +207,7 @@ body <- shinydashboard::dashboardBody(
           shiny::tabPanel(
             "View",
             shiny::uiOutput(outputId = "summaryStatisticsSelectFactors"),
-            shiny::dataTableOutput(outputId = "summaryStatisticsDataTable"),
+            DT::DTOutput(outputId = "summaryStatisticsDataTable"),
             shiny::hr(),
             shiny::textInput(
               inputId = "summaryStatisticsLaTeXCaption",
@@ -272,7 +272,11 @@ body <- shinydashboard::dashboardBody(
                 "Bland-Altman Plot (Estimates vs Estimates)" = "est_ba",
                 "Bland-Altman Plot (SEs vs SEs)" = "se_ba",
                 "Ridgeline Plot (Estimates vs Estimates)" = "est_ridge",
-                "Ridgeline Plot (SEs vs SEs)" = "se_ridge"
+                "Ridgeline Plot (SEs vs SEs)" = "se_ridge",
+                "Density Plot (Estimates vs Estimates)" = "est_density",
+                "Density Plot (SEs vs SEs)" = "se_density",
+                "Hexbin Plot (Estimates vs Estimates)" = "est_hex",
+                "Hexbin Plot (SEs vs SEs)" = "se_hex"
               )
             ),
             shiny::plotOutput(outputId = "outPlotEstimates", height = "500px"),
