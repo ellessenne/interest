@@ -24,7 +24,7 @@ Imports:
  naniar (>= 0.4.2),
  readr,
  rlang,
- rsimsum (>= 0.6.0),
+ rsimsum (>= 0.8.0),
  shiny,
  shinydashboard,
  tidyr,
