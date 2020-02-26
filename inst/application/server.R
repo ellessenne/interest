@@ -17,7 +17,7 @@ function(input, output, session) {
     switch(
       input$whichTrue,
       "fixed" = shiny::numericInput(inputId = "defineTrue", label = "True value:", value = 0),
-      "row-specific" = shiny::selectInput(inputId = "defineTrue", label = "True values:", choices = "")
+      "row-specific" = shiny::selectInput(inputId = "defineTrue", label = "Column with true values:", choices = "")
     )
   })
 
