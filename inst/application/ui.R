@@ -162,9 +162,10 @@ body <- shinydashboard::dashboardBody(
             label = "",
             choices = list(
               "Fixed" = "fixed",
-              "Row-specific" = "row-specific"
+              "Row-specific" = "row-specific",
+              "Undefined" = "undefined"
             ),
-            selected = "fixed"
+            selected = "undefined"
           ),
           shiny::conditionalPanel(
             condition = "input.whichTrue == 'fixed'",

@@ -68,8 +68,8 @@ function(input, output, session) {
   # Insert values in variables selectors
   shiny::observe({
     shiny::req(data())
-    shiny::updateSelectInput(session, inputId = "defineEstvarname", choices = names(data()))
-    shiny::updateSelectInput(session, inputId = "defineSe", choices = names(data()))
+    shiny::updateSelectInput(session, inputId = "defineEstvarname", choices = c(names(data())))
+    shiny::updateSelectInput(session, inputId = "defineSe", choices = c("", names(data())))
     shiny::updateSelectInput(session, inputId = "defineMethod", choices = c("", names(data())))
     shiny::updateSelectInput(session, inputId = "defineBy", choices = names(data()))
     shiny::updateSelectInput(session, inputId = "defineTrueCol", choices = names(data()))
@@ -258,6 +258,23 @@ function(input, output, session) {
   s <- reactive({
     shiny::req(data())
 
+    # Process inputs
+    if (input$defineSe == "") {
+      inse <- NULL
+    } else {
+      inse <- input$defineSe
+    }
+    if (input$defineMethod == "") {
+      inmethod <- NULL
+    } else {
+      inmethod <- input$defineMethod
+    }
+    if (input$defineRefMethod == "") {
+      inref <- NULL
+    } else {
+      inref <- input$defineRefMethod
+    }
+
     # Control estimation
     ctrl <- list(
       mcse = input$includeMCSE,
@@ -270,8 +287,10 @@ function(input, output, session) {
     # True
     if (input$whichTrue == "fixed") {
       intrue <- input$defineTrue
-    } else {
+    } else if (input$whichTrue == "row-specific") {
       intrue <- input$defineTrueCol
+    } else {
+      intrue <- NULL
     }
     # CIs
     if (input$whichCIs == "fixed") {
@@ -280,57 +299,20 @@ function(input, output, session) {
       inci.limits <- c(input$defineCIlower, input$defineCIupper)
     }
 
-    if (input$defineMethod != "" & !is.null(input$defineBy)) {
-      s <- rsimsum::simsum(
-        data = data(),
-        estvarname = input$defineEstvarname,
-        true = intrue,
-        se = input$defineSe,
-        methodvar = input$defineMethod,
-        ref = input$defineRefMethod,
-        by = input$defineBy,
-        x = TRUE,
-        ci.limits = inci.limits,
-        dropbig = input$rsimsumDropbig,
-        control = ctrl
-      )
-    } else if (input$defineMethod != "" & is.null(input$defineBy)) {
-      s <- rsimsum::simsum(
-        data = data(),
-        estvarname = input$defineEstvarname,
-        true = intrue,
-        se = input$defineSe,
-        methodvar = input$defineMethod,
-        ref = input$defineRefMethod,
-        x = TRUE,
-        ci.limits = inci.limits,
-        dropbig = input$rsimsumDropbig,
-        control = ctrl
-      )
-    } else if (input$defineMethod == "" & !is.null(input$defineBy)) {
-      s <- rsimsum::simsum(
-        data = data(),
-        estvarname = input$defineEstvarname,
-        true = intrue,
-        se = input$defineSe,
-        by = input$defineBy,
-        x = TRUE,
-        ci.limits = inci.limits,
-        dropbig = input$rsimsumDropbig,
-        control = ctrl
-      )
-    } else {
-      s <- rsimsum::simsum(
-        data = data(),
-        estvarname = input$defineEstvarname,
-        true = intrue,
-        se = input$defineSe,
-        x = TRUE,
-        ci.limits = inci.limits,
-        dropbig = input$rsimsumDropbig,
-        control = ctrl
-      )
-    }
+    # Call rsimsum
+    s <- rsimsum::simsum(
+      data = data(),
+      estvarname = input$defineEstvarname,
+      true = intrue,
+      se = inse,
+      methodvar = inmethod,
+      ref = inref,
+      by = input$defineBy,
+      x = TRUE,
+      ci.limits = inci.limits,
+      dropbig = input$rsimsumDropbig,
+      control = ctrl
+    )
     s
   })
 
