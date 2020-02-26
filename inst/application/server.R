@@ -65,6 +65,10 @@ function(input, output, session) {
         df <- readr::read_tsv(input$pasteData)
         attr(df, "spec") <- NULL
         return(df)
+      },
+      "exampleData" = {
+        df <- readRDS("data/tt.RDS")
+        return(df)
       }
     )
   })

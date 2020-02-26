@@ -99,12 +99,14 @@ body <- shinydashboard::dashboardBody(
             choices = c(
               "Upload file" = "uploadData",
               "Link file" = "linkData",
-              "Paste file" = "pasteData"
+              "Paste file" = "pasteData",
+              "Example dataset" = "exampleData"
             ),
-            selected = "uploadData",
+            selected = "exampleData",
             inline = TRUE
           ),
-          shiny::uiOutput(outputId = "loadData")
+          shiny::uiOutput(outputId = "loadData"),
+          shiny::p("N.B.: Maximum file size to upload is 100MB. The example dataset is described in more detail in the ", shiny::em("user guide"), " tab.")
         )
       ),
       shiny::fluidRow(
