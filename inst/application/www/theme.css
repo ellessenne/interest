@@ -1,57 +1,55 @@
-@import url('https://rsms.me/inter/inter.css');
+:root {
+	--font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+
+	--grey-100: #F5F5F5;
+	--grey-500: #9E9E9E;
+	--grey-900: #212121;
+}
 
 html {
-	font-family: 'Inter', sans-serif;
+	font-family: var(--font-family-sans-serif);
 }
 
 body {
-	font-family: 'Inter', sans-serif;
+	font-family: var(--font-family-sans-serif);
 }
 
 .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
-	font-family: 'Inter', sans-serif;
-}
-
-@supports (font-variation-settings: normal) {
-	html {
-		font-family: 'Inter var', sans-serif;
-	}
-	body {
-		font-family: 'Inter var', sans-serif;
-	}
-	.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
-		font-family: 'Inter var', sans-serif;
-	}
+	font-family: var(--font-family-sans-serif);
 }
 
 .skin-blue .main-header .navbar {
-	background-color: #424242;
+	background-color: var(--grey-900);
 }
 
 .main-header .logo {
-	font-family: 'Inter', sans-serif;
+	font-family: var(--font-family-sans-serif);
 }
 
 .skin-blue .main-header .logo:hover {
-	background-color: #757575;
+	background-color: var(--grey-500);
 }
 
 .skin-blue .main-header .logo {
-	background-color: #757575;
+	background-color: var(--grey-500);
 }
 
 .skin-blue .sidebar-menu>li.active>a, .skin-blue .sidebar-menu>li:hover>a {
-	border-left-color: #757575;
+	border-left-color: var(--grey-500);
 }
 
-.content-wrapper, .right-side {
-	background-color: #EEEEEE;
+.content-wrapper {
+	background-color: var(--grey-100);
 }
 
 .skin-blue .main-header .navbar .sidebar-toggle:hover {
-	background-color: #757575;
+	background-color: var(--grey-500);
 }
 
 .nav-tabs-custom>.nav-tabs>li.active {
-	border-top-color: #424242;
+	border-top-color: var(--grey-900);
+}
+
+.jumbotron p {
+	font-weight: 300;
 }
