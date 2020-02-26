@@ -74,8 +74,9 @@ body <- shinydashboard::dashboardBody(
           shiny::HTML(paste0("<div class='jumbotron' style='background:white;'>
           <div class='container'>
           <h1>Welcome to INTEREST!</h1>
-          <p>INTEREST is a Shiny app that allows exploring results from Monte Carlo simulation studies interactively and producing plots and tables ready to use in manuscripts and presentations.</p>
-          <p>INTEREST is also great for disseminating and inspecting results from simulation studies published in the literature where the dataset with the results is openly available.</p>
+          <p>INTEREST is a Shiny app that allows exploring results from Monte Carlo simulation studies interactively</p>
+          <p>Plots and tables can be produced and exported, ready to be used in manuscripts and presentations or just for iterating quickly.</p>
+          <p>INTEREST is also great for disseminating and inspecting results from simulation studies published in the literature where the results are openly available.</p>
           </div>
           </div>")),
           solidHeader = TRUE,
