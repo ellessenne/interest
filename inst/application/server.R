@@ -154,7 +154,7 @@ function(input, output, session) {
         plot <- switch(input$missingDataPlotType,
           "barsn" = naniar:::gg_miss_var_create(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = input$defineMethod)), show_pct = FALSE) + ggplot2::facet_wrap(facets = input$defineMethod, labeller = ggplot2::label_both),
           "barsp" = naniar:::gg_miss_var_create(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = input$defineMethod)), show_pct = TRUE) + ggplot2::facet_wrap(facets = input$defineMethod, labeller = ggplot2::label_both),
-          "amount" = naniar::vis_miss(data()),
+          "amount" = naniar::vis_miss(data(), warn_large_data = FALSE),
           "scatter" = ggplot2::ggplot(data(), ggplot2::aes_string(x = input$defineEstvarname, y = input$defineSe)) + naniar::geom_miss_point() + ggplot2::facet_wrap(facets = input$defineMethod, labeller = ggplot2::label_both),
           "heat" = ggplot2::ggplot(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = input$defineMethod)), ggplot2::aes_string(x = input$defineMethod, y = "variable", fill = "pct_miss")) + ggplot2::geom_tile() + ggplot2::scale_fill_gradient(low = "#56B4E9", high = "#D55E00")
         )
@@ -164,14 +164,14 @@ function(input, output, session) {
         plot <- switch(input$missingDataPlotType,
           "barsn" = naniar:::gg_miss_var_create(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = input$defineBy)), show_pct = FALSE) + ggplot2::facet_wrap(facets = input$defineBy, labeller = ggplot2::label_both),
           "barsp" = naniar:::gg_miss_var_create(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = input$defineBy)), show_pct = TRUE) + ggplot2::facet_wrap(facets = input$defineBy, labeller = ggplot2::label_both),
-          "amount" = naniar::vis_miss(data()),
+          "amount" = naniar::vis_miss(data(), warn_large_data = FALSE),
           "scatter" = ggplot2::ggplot(data(), ggplot2::aes_string(x = input$defineEstvarname, y = input$defineSe)) + naniar::geom_miss_point() + ggplot2::facet_wrap(facets = input$defineBy, labeller = ggplot2::label_both)
         )
       } else {
         plot <- switch(input$missingDataPlotType,
           "barsn" = naniar:::gg_miss_var_create_n_miss(naniar::miss_var_summary(data())),
           "barsp" = naniar:::gg_miss_var_create_pct_miss(naniar::miss_var_summary(data())),
-          "amount" = naniar::vis_miss(data()),
+          "amount" = naniar::vis_miss(data(), warn_large_data = FALSE),
           "scatter" = ggplot2::ggplot(data(), ggplot2::aes_string(x = input$defineEstvarname, y = input$defineSe)) + naniar::geom_miss_point()
         )
       }
