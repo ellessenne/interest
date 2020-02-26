@@ -112,7 +112,7 @@ body <- shinydashboard::dashboardBody(
       shiny::fluidRow(
         shinydashboard::box(
           title = "Define variables",
-          width = 3,
+          width = 4,
           solidHeader = TRUE,
           shiny::selectInput(
             inputId = "defineEstvarname",
@@ -126,23 +126,8 @@ body <- shinydashboard::dashboardBody(
           )
         ),
         shinydashboard::box(
-          title = "Define true values:",
-          width = 3,
-          solidHeader = TRUE,
-          shiny::radioButtons(
-            inputId = "whichTrue",
-            label = "",
-            choices = list(
-              "Fixed" = "fixed",
-              "Row-specific" = "row-specific"
-            ),
-            selected = "fixed"
-          ),
-          shiny::uiOutput(outputId = "defineTrueInput")
-        ),
-        shinydashboard::box(
           title = "Define methods",
-          width = 3,
+          width = 4,
           solidHeader = TRUE,
           shiny::selectInput(
             inputId = "defineMethod",
@@ -157,13 +142,56 @@ body <- shinydashboard::dashboardBody(
         ),
         shinydashboard::box(
           title = "Define DGMs",
-          width = 3,
+          width = 4,
           solidHeader = TRUE,
           shiny::selectInput(
             inputId = "defineBy",
             label = "By factors:",
             choices = "",
             multiple = TRUE
+          )
+        )
+      ),
+      shiny::fluidRow(
+        shinydashboard::box(
+          title = "Define true values",
+          width = 5,
+          solidHeader = TRUE,
+          shiny::radioButtons(
+            inputId = "whichTrue",
+            label = "",
+            choices = list(
+              "Fixed" = "fixed",
+              "Row-specific" = "row-specific"
+            ),
+            selected = "fixed"
+          ),
+          shiny::conditionalPanel(
+            condition = "input.whichTrue == 'fixed'",
+            shiny::numericInput(inputId = "defineTrue", label = "True value:", value = 0)
+          ),
+          shiny::conditionalPanel(
+            condition = "input.whichTrue == 'row-specific'",
+            shiny::selectInput(inputId = "defineTrueCol", label = "Column with true values:", choices = "")
+          )
+        ),
+        shinydashboard::box(
+          title = "Define confidence intervals",
+          width = 7,
+          solidHeader = TRUE,
+          shiny::radioButtons(
+            inputId = "whichCIs",
+            label = "",
+            choices = list(
+              "Fixed" = "fixed",
+              "Row-specific" = "row-specific"
+            ),
+            selected = "fixed"
+          ),
+          shiny::conditionalPanel(
+            condition = "input.whichCIs == 'row-specific'",
+            shiny::selectInput(inputId = "defineCIlower", label = "Column with lower bound:", choices = ""),
+            shiny::selectInput(inputId = "defineCIupper", label = "Column with upper bound:", choices = "")
           )
         )
       )
@@ -488,18 +516,35 @@ body <- shinydashboard::dashboardBody(
           id = "tabPlots",
           width = 12,
           shiny::tabPanel(
-            title = "Uploading data",
-            shiny::p("INTEREST supports uploading data, provinding a link, or even pasting data."),
-            shiny::p("The uploaded or linked file can be a comma-separated (.csv) file, a Stata version 8-14 file (.dta), an SPSS file (.sav), a SAS file (.sas7bdat), or an R serialised file (.rds); format will be inferred automatically, as long as you provide a file with the appropriate extension (case insensitive). Files ending in .gz, .bz2, .xz, or .zip will be automatically uncompressed. Pasted data is read as tab-separated values."),
-            shiny::p("The dataset must be in tidy format, with variables in columns and observations in rows. See", shiny::a(href = "https://www.jstatsoft.org/article/view/v059i10", "here"), "for more details on tidy data. The app - at the moment - can handle a single estimand at once, and the uploaded dataset must include the following variables:"),
+            title = "Example data",
+            shiny::p("The example dataset comes from a simulation study aimed to compare the t-test with pooled vs unpooled variance in violation (or not) of the t-test assumptions: normality of data, and equality (or not) or variance between groups."),
+            shiny::p("The uploaded data is a data frame with 4,000 rows and 8 variables:"),
             shiny::tags$ul(
-              shiny::tags$li("A variable representing an estimated coefficient or value from the simulation study;"),
-              shiny::tags$li("A variable representing the standard error of the estimated coefficient.")
+              shiny::tags$li(shiny::code("diff"), ": the difference in mean between groups estimated by the t-test;"),
+              shiny::tags$li(shiny::code("se"), ": the standard error of the estimated differences;"),
+              shiny::tags$li(shiny::code("lower"), ", ", shiny::code("upper"), ": confidence intervals for the difference in mean as reported by the t-test;"),
+              shiny::tags$li(shiny::code("df"), ": the number of degrees of freedom assumed by the t-test;"),
+              shiny::tags$li(shiny::code("repno"), ": identifies each replication, between 1 and 500;"),
+              shiny::tags$li(shiny::code("dgm"), ": identifies each data-generating mechanism;"),
+              shiny::tags$li(shiny::code("method"), ": analysis method;"),
+              shiny::tags$li(shiny::code("true"), ": a column representing the true value of the difference in means (-1).")
             ),
-            shiny::p("The true value of the estimand must be specified by the user. Additionally, a dataset could contain the following variables:"),
+            shiny::p("This dataset is bundled with the R package ", shiny::code("rsimsum"), ".")
+          ),
+          shiny::tabPanel(
+            title = "Uploading data",
+            shiny::p("INTEREST supports uploading data, providing a link, or even pasting data."),
+            shiny::p("The uploaded or linked file can be a comma-separated (.csv) file, a Stata version 8-14 file (.dta), an SPSS file (.sav), a SAS file (.sas7bdat), or an R serialised file (.rds); format will be inferred automatically, as long as you provide a file with the appropriate extension (case insensitive). Files ending in .gz, .bz2, .xz, or .zip will be automatically uncompressed. Pasted data is read as tab-separated values."),
+            shiny::p("The dataset must be in tidy format, with variables in columns and observations in rows. See", shiny::a(href = "https://www.jstatsoft.org/article/view/v059i10", "here"), "for more details on tidy data."),
+            shiny::p("The app - at the moment - can handle a single estimand at once."),
+            shiny::p("The uploaded dataset must include a variable representing an estimated coefficient or value from the simulation study."),
+            shiny::p("The true value of the estimand must be specified by the user, as a fixed value or as a column in the dataset."),
+            shiny::p("Additionally, a dataset might contain the following variables:"),
             shiny::tags$ul(
+              shiny::tags$li("A variable representing the standard error of the estimated coefficient;"),
               shiny::tags$li("A variable representing methods compared with the simulation study;"),
-              shiny::tags$li("A list of variables representing the various data-generating factors (DGMs), e.g. sample size, true distribution, etc.")
+              shiny::tags$li("A list of variables representing the various data-generating factors (DGMs), e.g. sample size, true distribution, etc.;"),
+              shiny::tags$li("Two variables that identify lower and upper limits of confidence intervals used to calculate coverage and bias-eliminated coverage. This is useful e.g. for asymmetric confidence intervals.")
             ),
             shiny::p("After uploading a dataset to INTEREST it will be possible to assign each variable to estimands, SEs, etc.")
           ),
@@ -529,14 +574,16 @@ body <- shinydashboard::dashboardBody(
             shiny::p("INTEREST can produce a variety of plots to visualise results from simulation studies automatically."),
             shiny::p("Plots produced by INTEREST can be categorised into two broad groups:"),
             shiny::tags$ol(
-              shiny::tags$li("plots of estimated values (and standard errors);"),
-              shiny::tags$li("plots of estimated performance.")
+              shiny::tags$li("Plots of estimated values (and standard errors);"),
+              shiny::tags$li("Plots of estimated performance.")
             ),
             shiny::p("Plots for estimated values and standard errors are:"),
             shiny::tags$ul(
-              shiny::tags$li("scatter plot with method-wise comparison of point estimates (or standard errors);"),
+              shiny::tags$li("Scatter plot with method-wise comparison of point estimates (or standard errors);"),
               shiny::tags$li("Bland-Altman plot with method-wise comparison of point estimates (or standard errors);"),
-              shiny::tags$li("Ridgelines plot with the method-wise comparison of the distribution of point estimates (or standard errors).")
+              shiny::tags$li("Ridgelines plot with the method-wise comparison of the distribution of point estimates (or standard errors)."),
+              shiny::tags$li("Ridgelines plot with the method-wise comparison of the distribution of point estimates (or standard errors)."),
+              shiny::tags$li("Contour and hexbin plot, useful when there is large overlap of points in the scatter plots."),
             ),
             shiny::p("Each plot will include colours defined by method (if any) and automatic faceting by DGMs (if any)."),
             shiny::p("Conversely, the following plots are supported for estimated performance:"),

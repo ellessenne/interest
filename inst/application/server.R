@@ -12,15 +12,6 @@ function(input, output, session) {
     )
   })
 
-  ### Provide proper input depending on the type of true values passed to INTEREST
-  output$defineTrueInput <- shiny::renderUI({
-    switch(
-      input$whichTrue,
-      "fixed" = shiny::numericInput(inputId = "defineTrue", label = "True value:", value = 0),
-      "row-specific" = shiny::selectInput(inputId = "defineTrue", label = "Column with true values:", choices = "")
-    )
-  })
-
   ### Function for reading data
   data <- shiny::reactive({
     switch(
@@ -81,9 +72,9 @@ function(input, output, session) {
     shiny::updateSelectInput(session, inputId = "defineSe", choices = names(data()))
     shiny::updateSelectInput(session, inputId = "defineMethod", choices = c("", names(data())))
     shiny::updateSelectInput(session, inputId = "defineBy", choices = names(data()))
-    if (input$whichTrue == "row-specific") {
-      shiny::updateSelectInput(session, inputId = "defineTrue", choices = names(data()))
-    }
+    shiny::updateSelectInput(session, inputId = "defineTrueCol", choices = names(data()))
+    shiny::updateSelectInput(session, inputId = "defineCIlower", choices = names(data()))
+    shiny::updateSelectInput(session, inputId = "defineCIupper", choices = names(data()))
   })
   # Detect methods if method is specified
   shiny::observe({
@@ -276,17 +267,30 @@ function(input, output, session) {
       dropbig.semax = input$rsimsumDropbig.semax,
       dropbig.robust = input$rsimsumDropbig.robust
     )
+    # True
+    if (input$whichTrue == "fixed") {
+      intrue <- input$defineTrue
+    } else {
+      intrue <- input$defineTrueCol
+    }
+    # CIs
+    if (input$whichCIs == "fixed") {
+      inci.limits <- NULL
+    } else {
+      inci.limits <- c(input$defineCIlower, input$defineCIupper)
+    }
 
     if (input$defineMethod != "" & !is.null(input$defineBy)) {
       s <- rsimsum::simsum(
         data = data(),
         estvarname = input$defineEstvarname,
-        true = input$defineTrue,
+        true = intrue,
         se = input$defineSe,
         methodvar = input$defineMethod,
         ref = input$defineRefMethod,
         by = input$defineBy,
         x = TRUE,
+        ci.limits = inci.limits,
         dropbig = input$rsimsumDropbig,
         control = ctrl
       )
@@ -294,11 +298,12 @@ function(input, output, session) {
       s <- rsimsum::simsum(
         data = data(),
         estvarname = input$defineEstvarname,
-        true = input$defineTrue,
+        true = intrue,
         se = input$defineSe,
         methodvar = input$defineMethod,
         ref = input$defineRefMethod,
         x = TRUE,
+        ci.limits = inci.limits,
         dropbig = input$rsimsumDropbig,
         control = ctrl
       )
@@ -306,10 +311,11 @@ function(input, output, session) {
       s <- rsimsum::simsum(
         data = data(),
         estvarname = input$defineEstvarname,
-        true = input$defineTrue,
+        true = intrue,
         se = input$defineSe,
         by = input$defineBy,
         x = TRUE,
+        ci.limits = inci.limits,
         dropbig = input$rsimsumDropbig,
         control = ctrl
       )
@@ -317,9 +323,10 @@ function(input, output, session) {
       s <- rsimsum::simsum(
         data = data(),
         estvarname = input$defineEstvarname,
-        true = input$defineTrue,
+        true = intrue,
         se = input$defineSe,
         x = TRUE,
+        ci.limits = inci.limits,
         dropbig = input$rsimsumDropbig,
         control = ctrl
       )
@@ -359,26 +366,30 @@ function(input, output, session) {
   })
 
   ### Make a data table with the summary statistics
-  output$summaryStatisticsDataTable <- DT::renderDT(
-    {
-      shiny::req(data())
-      s <- prettySumm()
-    },
-    options = list(pageLength = 20, dom = "t"),
-    rownames = FALSE
-  )
+  shiny::observe({
+    output$summaryStatisticsDataTable <- DT::renderDT(
+      {
+        shiny::req(data())
+        s <- prettySumm()
+      },
+      options = list(pageLength = 20, dom = "t"),
+      rownames = FALSE
+    )
+  })
 
   ### Make summary table in LaTeX
-  output$summaryStatisticsLaTeX <- shiny::renderPrint({
-    shiny::req(data())
-    print(
-      xtable::xtable(
-        x = prettySumm(),
-        caption = input$summaryStatisticsLaTeXCaption,
-        digits = input$significantDigits
-      ),
-      include.rownames = FALSE
-    )
+  shiny::observe({
+    output$summaryStatisticsLaTeX <- shiny::renderPrint({
+      shiny::req(data())
+      print(
+        xtable::xtable(
+          x = prettySumm(),
+          caption = input$summaryStatisticsLaTeXCaption,
+          digits = input$significantDigits
+        ),
+        include.rownames = FALSE
+      )
+    })
   })
 
   ### Update caption of LaTeX table with current `by` scenario, if specified
@@ -477,9 +488,11 @@ function(input, output, session) {
   }
 
   # Print estimates plot
-  output$outPlotEstimates <- shiny::renderPlot({
-    shiny::req(data())
-    makePlotEstimates()
+  shiny::observe({
+    output$outPlotEstimates <- shiny::renderPlot({
+      shiny::req(data())
+      makePlotEstimates()
+    })
   })
 
   # Make summaries plot
@@ -506,9 +519,11 @@ function(input, output, session) {
   }
 
   # Print summaries plot
-  output$outPlotSummary <- shiny::renderPlot({
-    shiny::req(data())
-    makePlotSummary()
+  shiny::observe({
+    output$outPlotSummary <- shiny::renderPlot({
+      shiny::req(data())
+      makePlotSummary()
+    })
   })
 
   # Download plots
