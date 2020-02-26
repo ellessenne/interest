@@ -12,6 +12,15 @@ function(input, output, session) {
     )
   })
 
+  ### Provide proper input depending on the type of true values passed to INTEREST
+  output$defineTrueInput <- shiny::renderUI({
+    switch(
+      input$whichTrue,
+      "fixed" = shiny::numericInput(inputId = "defineTrue", label = "True value:", value = 0),
+      "row-specific" = shiny::selectInput(inputId = "defineTrue", label = "True values:", choices = "")
+    )
+  })
+
   ### Function for reading data
   data <- shiny::reactive({
     switch(
@@ -68,6 +77,9 @@ function(input, output, session) {
     shiny::updateSelectInput(session, inputId = "defineSe", choices = names(data()))
     shiny::updateSelectInput(session, inputId = "defineMethod", choices = c("", names(data())))
     shiny::updateSelectInput(session, inputId = "defineBy", choices = names(data()))
+    if (input$whichTrue == "row-specific") {
+      shiny::updateSelectInput(session, inputId = "defineTrue", choices = names(data()))
+    }
   })
   # Detect methods if method is specified
   shiny::observe({
@@ -147,16 +159,25 @@ function(input, output, session) {
           "barsn" = naniar:::gg_miss_var_create(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = c(input$defineMethod, input$defineBy))), show_pct = FALSE) + ggplot2::facet_grid(reformulate(input$defineMethod, input$defineBy), labeller = ggplot2::label_both),
           "barsp" = naniar:::gg_miss_var_create(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = c(input$defineMethod, input$defineBy))), show_pct = TRUE) + ggplot2::facet_grid(reformulate(input$defineMethod, input$defineBy), labeller = ggplot2::label_both),
           "amount" = naniar::vis_miss(data(), warn_large_data = FALSE),
-          "scatter" = ggplot2::ggplot(data(), ggplot2::aes_string(x = input$defineEstvarname, y = input$defineSe)) + naniar::geom_miss_point() + ggplot2::facet_grid(reformulate(input$defineMethod, input$defineBy), labeller = ggplot2::label_both),
-          "heat" = ggplot2::ggplot(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = c(input$defineMethod, input$defineBy))), ggplot2::aes_string(x = input$defineMethod, y = "variable", fill = "pct_miss")) + ggplot2::geom_tile() + ggplot2::scale_fill_gradient(low = "#56B4E9", high = "#D55E00") + ggplot2::facet_wrap(facets = input$defineBy, labeller = ggplot2::label_both)
+          "scatter" = ggplot2::ggplot(data(), ggplot2::aes_string(x = input$defineEstvarname, y = input$defineSe)) +
+            naniar::geom_miss_point() +
+            ggplot2::facet_grid(reformulate(input$defineMethod, input$defineBy), labeller = ggplot2::label_both),
+          "heat" = ggplot2::ggplot(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = c(input$defineMethod, input$defineBy))), ggplot2::aes_string(x = input$defineMethod, y = "variable", fill = "pct_miss")) +
+            ggplot2::geom_tile() +
+            ggplot2::scale_fill_gradient(low = "#56B4E9", high = "#D55E00") +
+            ggplot2::facet_wrap(facets = input$defineBy, labeller = ggplot2::label_both)
         )
       } else {
         plot <- switch(input$missingDataPlotType,
           "barsn" = naniar:::gg_miss_var_create(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = input$defineMethod)), show_pct = FALSE) + ggplot2::facet_wrap(facets = input$defineMethod, labeller = ggplot2::label_both),
           "barsp" = naniar:::gg_miss_var_create(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = input$defineMethod)), show_pct = TRUE) + ggplot2::facet_wrap(facets = input$defineMethod, labeller = ggplot2::label_both),
           "amount" = naniar::vis_miss(data(), warn_large_data = FALSE),
-          "scatter" = ggplot2::ggplot(data(), ggplot2::aes_string(x = input$defineEstvarname, y = input$defineSe)) + naniar::geom_miss_point() + ggplot2::facet_wrap(facets = input$defineMethod, labeller = ggplot2::label_both),
-          "heat" = ggplot2::ggplot(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = input$defineMethod)), ggplot2::aes_string(x = input$defineMethod, y = "variable", fill = "pct_miss")) + ggplot2::geom_tile() + ggplot2::scale_fill_gradient(low = "#56B4E9", high = "#D55E00")
+          "scatter" = ggplot2::ggplot(data(), ggplot2::aes_string(x = input$defineEstvarname, y = input$defineSe)) +
+            naniar::geom_miss_point() +
+            ggplot2::facet_wrap(facets = input$defineMethod, labeller = ggplot2::label_both),
+          "heat" = ggplot2::ggplot(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = input$defineMethod)), ggplot2::aes_string(x = input$defineMethod, y = "variable", fill = "pct_miss")) +
+            ggplot2::geom_tile() +
+            ggplot2::scale_fill_gradient(low = "#56B4E9", high = "#D55E00")
         )
       }
     } else {
@@ -165,14 +186,17 @@ function(input, output, session) {
           "barsn" = naniar:::gg_miss_var_create(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = input$defineBy)), show_pct = FALSE) + ggplot2::facet_wrap(facets = input$defineBy, labeller = ggplot2::label_both),
           "barsp" = naniar:::gg_miss_var_create(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = input$defineBy)), show_pct = TRUE) + ggplot2::facet_wrap(facets = input$defineBy, labeller = ggplot2::label_both),
           "amount" = naniar::vis_miss(data(), warn_large_data = FALSE),
-          "scatter" = ggplot2::ggplot(data(), ggplot2::aes_string(x = input$defineEstvarname, y = input$defineSe)) + naniar::geom_miss_point() + ggplot2::facet_wrap(facets = input$defineBy, labeller = ggplot2::label_both)
+          "scatter" = ggplot2::ggplot(data(), ggplot2::aes_string(x = input$defineEstvarname, y = input$defineSe)) +
+            naniar::geom_miss_point() +
+            ggplot2::facet_wrap(facets = input$defineBy, labeller = ggplot2::label_both)
         )
       } else {
         plot <- switch(input$missingDataPlotType,
           "barsn" = naniar:::gg_miss_var_create_n_miss(naniar::miss_var_summary(data())),
           "barsp" = naniar:::gg_miss_var_create_pct_miss(naniar::miss_var_summary(data())),
           "amount" = naniar::vis_miss(data(), warn_large_data = FALSE),
-          "scatter" = ggplot2::ggplot(data(), ggplot2::aes_string(x = input$defineEstvarname, y = input$defineSe)) + naniar::geom_miss_point()
+          "scatter" = ggplot2::ggplot(data(), ggplot2::aes_string(x = input$defineEstvarname, y = input$defineSe)) +
+            naniar::geom_miss_point()
         )
       }
     }

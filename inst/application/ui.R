@@ -121,12 +121,22 @@ body <- shinydashboard::dashboardBody(
             inputId = "defineSe",
             label = "Standard errors:",
             choices = ""
-          ),
-          shiny::numericInput(
-            inputId = "defineTrue",
-            label = "True value:",
-            value = 0
           )
+        ),
+        shinydashboard::box(
+          title = "Define true values:",
+          width = 3,
+          solidHeader = TRUE,
+          shiny::radioButtons(
+            inputId = "whichTrue",
+            label = "",
+            choices = list(
+              "Fixed" = "fixed",
+              "Row-specific" = "row-specific"
+            ),
+            selected = "fixed"
+          ),
+          shiny::uiOutput(outputId = "defineTrueInput")
         ),
         shinydashboard::box(
           title = "Define methods",
@@ -153,12 +163,6 @@ body <- shinydashboard::dashboardBody(
             choices = "",
             multiple = TRUE
           )
-        ),
-        shinydashboard::box(
-          title = "Define estimands",
-          width = 3,
-          solidHeader = TRUE,
-          shiny::em("Coming soon...")
         )
       )
     ),
