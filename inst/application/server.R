@@ -151,12 +151,17 @@ function(input, output, session) {
     if (input$defineMethod != "") {
       if (!is.null(input$defineBy)) {
         plot <- switch(input$missingDataPlotType,
-          "barsn" = naniar:::gg_miss_var_create(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = c(input$defineMethod, input$defineBy))), show_pct = FALSE) + ggplot2::facet_grid(reformulate(input$defineMethod, input$defineBy), labeller = ggplot2::label_both),
-          "barsp" = naniar:::gg_miss_var_create(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = c(input$defineMethod, input$defineBy))), show_pct = TRUE) + ggplot2::facet_grid(reformulate(input$defineMethod, input$defineBy), labeller = ggplot2::label_both),
+          "barsn" = naniar::gg_miss_var(dplyr::group_by_at(data(), .vars = c(input$defineMethod, input$defineBy)), show_pct = FALSE) + ggplot2::facet_grid(reformulate(input$defineMethod, input$defineBy), labeller = ggplot2::label_both),
+          "barsp" = naniar::gg_miss_var(dplyr::group_by_at(data(), .vars = c(input$defineMethod, input$defineBy)), show_pct = TRUE) + ggplot2::facet_grid(reformulate(input$defineMethod, input$defineBy), labeller = ggplot2::label_both),
           "amount" = naniar::vis_miss(data(), warn_large_data = FALSE),
-          "scatter" = ggplot2::ggplot(data(), ggplot2::aes_string(x = input$defineEstvarname, y = input$defineSe)) +
-            naniar::geom_miss_point() +
-            ggplot2::facet_grid(reformulate(input$defineMethod, input$defineBy), labeller = ggplot2::label_both),
+          "scatter" = {
+            shiny::validate(
+              shiny::need(input$defineSe != "", message = "Plot not meaningful if SEs are not provided.")
+            )
+            ggplot2::ggplot(data(), ggplot2::aes_string(x = input$defineEstvarname, y = input$defineSe)) +
+              naniar::geom_miss_point() +
+              ggplot2::facet_grid(reformulate(input$defineMethod, input$defineBy), labeller = ggplot2::label_both)
+          },
           "heat" = ggplot2::ggplot(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = c(input$defineMethod, input$defineBy))), ggplot2::aes_string(x = input$defineMethod, y = "variable", fill = "pct_miss")) +
             ggplot2::geom_tile() +
             ggplot2::scale_fill_gradient(low = "#56B4E9", high = "#D55E00") +
@@ -164,12 +169,17 @@ function(input, output, session) {
         )
       } else {
         plot <- switch(input$missingDataPlotType,
-          "barsn" = naniar:::gg_miss_var_create(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = input$defineMethod)), show_pct = FALSE) + ggplot2::facet_wrap(facets = input$defineMethod, labeller = ggplot2::label_both),
-          "barsp" = naniar:::gg_miss_var_create(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = input$defineMethod)), show_pct = TRUE) + ggplot2::facet_wrap(facets = input$defineMethod, labeller = ggplot2::label_both),
+          "barsn" = naniar::gg_miss_var(dplyr::group_by_at(data(), .vars = input$defineMethod), show_pct = FALSE) + ggplot2::facet_wrap(facets = input$defineMethod, labeller = ggplot2::label_both),
+          "barsp" = naniar:::gg_miss_var(dplyr::group_by_at(data(), .vars = input$defineMethod), show_pct = TRUE) + ggplot2::facet_wrap(facets = input$defineMethod, labeller = ggplot2::label_both),
           "amount" = naniar::vis_miss(data(), warn_large_data = FALSE),
-          "scatter" = ggplot2::ggplot(data(), ggplot2::aes_string(x = input$defineEstvarname, y = input$defineSe)) +
-            naniar::geom_miss_point() +
-            ggplot2::facet_wrap(facets = input$defineMethod, labeller = ggplot2::label_both),
+          "scatter" = {
+            shiny::validate(
+              shiny::need(input$defineSe != "", message = "Plot not meaningful if SEs are not provided.")
+            )
+            ggplot2::ggplot(data(), ggplot2::aes_string(x = input$defineEstvarname, y = input$defineSe)) +
+              naniar::geom_miss_point() +
+              ggplot2::facet_wrap(facets = input$defineMethod, labeller = ggplot2::label_both)
+          },
           "heat" = ggplot2::ggplot(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = input$defineMethod)), ggplot2::aes_string(x = input$defineMethod, y = "variable", fill = "pct_miss")) +
             ggplot2::geom_tile() +
             ggplot2::scale_fill_gradient(low = "#56B4E9", high = "#D55E00")
@@ -178,27 +188,33 @@ function(input, output, session) {
     } else {
       if (!is.null(input$defineBy)) {
         plot <- switch(input$missingDataPlotType,
-          "barsn" = naniar:::gg_miss_var_create(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = input$defineBy)), show_pct = FALSE) + ggplot2::facet_wrap(facets = input$defineBy, labeller = ggplot2::label_both),
-          "barsp" = naniar:::gg_miss_var_create(naniar::miss_var_summary(dplyr::group_by_at(data(), .vars = input$defineBy)), show_pct = TRUE) + ggplot2::facet_wrap(facets = input$defineBy, labeller = ggplot2::label_both),
+          "barsn" = naniar::gg_miss_var(dplyr::group_by_at(data(), .vars = input$defineBy), show_pct = FALSE) + ggplot2::facet_wrap(facets = input$defineBy, labeller = ggplot2::label_both),
+          "barsp" = naniar::gg_miss_var(dplyr::group_by_at(data(), .vars = input$defineBy), show_pct = TRUE) + ggplot2::facet_wrap(facets = input$defineBy, labeller = ggplot2::label_both),
           "amount" = naniar::vis_miss(data(), warn_large_data = FALSE),
-          "scatter" = ggplot2::ggplot(data(), ggplot2::aes_string(x = input$defineEstvarname, y = input$defineSe)) +
-            naniar::geom_miss_point() +
-            ggplot2::facet_wrap(facets = input$defineBy, labeller = ggplot2::label_both)
+          "scatter" = {
+            shiny::validate(
+              shiny::need(input$defineSe != "", message = "Plot not meaningful if SEs are not provided.")
+            )
+            ggplot2::ggplot(data(), ggplot2::aes_string(x = input$defineEstvarname, y = input$defineSe)) +
+              naniar::geom_miss_point() +
+              ggplot2::facet_wrap(facets = input$defineBy, labeller = ggplot2::label_both)
+          }
         )
       } else {
         plot <- switch(input$missingDataPlotType,
-          "barsn" = naniar:::gg_miss_var_create_n_miss(naniar::miss_var_summary(data())),
-          "barsp" = naniar:::gg_miss_var_create_pct_miss(naniar::miss_var_summary(data())),
+          "barsn" = naniar::gg_miss_var(data(), show_pct = FALSE),
+          "barsp" = naniar::gg_miss_var(data(), show_pct = TRUE),
           "amount" = naniar::vis_miss(data(), warn_large_data = FALSE),
-          "scatter" = ggplot2::ggplot(data(), ggplot2::aes_string(x = input$defineEstvarname, y = input$defineSe)) +
-            naniar::geom_miss_point()
+          "scatter" = {
+            shiny::validate(
+              shiny::need(input$defineSe != "", message = "Plot not meaningful if SEs are not provided.")
+            )
+            ggplot2::ggplot(data(), ggplot2::aes_string(x = input$defineEstvarname, y = input$defineSe)) +
+              naniar::geom_miss_point()
+          }
         )
       }
     }
-
-    # Fix typo in % Missing plot
-    # This looks weeeeird
-    if (input$missingDataPlotType == "barsp") plot <- plot + ggplot2::labs(y = "% Missing")
 
     # Custom axis labels
     if (input$customXlab != "") plot <- plot + ggplot2::labs(x = input$customXlab)
@@ -225,13 +241,19 @@ function(input, output, session) {
     vars <- c()
     if (input$defineMethod != "") vars <- c(vars, input$defineMethod)
     if (!is.null(input$defineBy)) vars <- c(vars, input$defineBy)
-    subdata <- data()[, c(vars, input$defineEstvarname, input$defineSe)]
+
+    if (input$defineSe != "") {
+      subdata <- data()[, c(vars, input$defineEstvarname, input$defineSe), drop = FALSE]
+    } else {
+      subdata <- data()[, c(vars, input$defineEstvarname), drop = FALSE]
+    }
     if (length(vars) > 0) {
       out <- naniar::miss_var_summary(dplyr::group_by_at(subdata, .vars = vars))
+      names(out)[(length(names(out)) - 2):length(names(out))] <- c("Variable", "N. missing", "% Missing")
     } else {
       out <- naniar::miss_var_summary(subdata)
+      names(out) <- c("Variable", "N. missing", "% Missing")
     }
-    names(out)[(length(names(out)) - 2):length(names(out))] <- c("N. missing", "% Missing", "Cumulative N. missing")
     out
   })
   # Make DT of missing data table
