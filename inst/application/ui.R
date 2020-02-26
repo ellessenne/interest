@@ -48,7 +48,7 @@ sidebar <- shinydashboard::dashboardSidebar(
     ),
     shinydashboard::menuItem(
       "Feedback and comments",
-      href = "mailto:ag475@leicester.ac.uk?Subject=Feedback%20and%20comments%20for%20INTEREST",
+      href = "mailto:alessandro.gasparini@ki.se?Subject=INTEREST%20Feedback%20and%20comments",
       icon = shiny::icon("commenting")
     ),
     shinydashboard::menuItem(
