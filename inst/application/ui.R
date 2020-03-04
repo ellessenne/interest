@@ -383,7 +383,7 @@ body <- shinydashboard::dashboardBody(
             ),
             shiny::sliderInput(
               inputId = "rsimsumLevel",
-              label = "Significance level for coverage, bias-eliminated coverage, power:",
+              label = "Confidence level for coverage, bias-eliminated coverage, power:",
               min = 0,
               max = 1,
               value = 0.95,
