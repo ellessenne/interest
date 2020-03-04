@@ -350,7 +350,6 @@ body <- shinydashboard::dashboardBody(
         shinydashboard::tabBox(
           width = 12,
           shiny::tabPanel(
-            "Display options",
             shiny::selectInput(
               inputId = "summaryStatisticsWhich",
               label = "Performance measures of interest:",
@@ -388,6 +387,7 @@ body <- shinydashboard::dashboardBody(
                 "power"
               )
             ),
+            "Table options",
             shiny::sliderInput(
               inputId = "significantDigits",
               label = "Number of significant digits:",
@@ -396,6 +396,11 @@ body <- shinydashboard::dashboardBody(
               value = 4,
               step = 1,
               round = TRUE
+            ),
+            shiny::checkboxInput(
+              inputId = "booktabs",
+              label = "Use the booktabs package for LaTeX tables",
+              value = TRUE
             )
           ),
           shiny::tabPanel(
