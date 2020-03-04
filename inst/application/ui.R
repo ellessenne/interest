@@ -350,44 +350,14 @@ body <- shinydashboard::dashboardBody(
         shinydashboard::tabBox(
           width = 12,
           shiny::tabPanel(
+            title = "Display options",
             shiny::selectInput(
               inputId = "summaryStatisticsWhich",
               label = "Performance measures of interest:",
-              choices = c(
-                "Non-missing estimates/SEs" = "nsim",
-                "Average point estimate" = "thetamean",
-                "Median point estimate" = "thetamedian",
-                "Average standard error" = "se2mean",
-                "Median standard error" = "se2median",
-                "Bias in point estimate" = "bias",
-                "Empirical standard error" = "empse",
-                "Mean squared error" = "mse",
-                "% gain in precision relative to reference method" = "relprec",
-                "Model-based standard error" = "modelse",
-                "Relative % error in standard error" = "relerror",
-                "Coverage of nominal 95% CI" = "cover",
-                "Bias-eliminated coverage of nominal 95% CI" = "becover",
-                "Power of 5% level test" = "power"
-              ),
+              choices = SummaryStatistics,
               multiple = TRUE,
-              selected = c(
-                "nsim",
-                "thetamean",
-                "thetamedian",
-                "se2mean",
-                "se2median",
-                "bias",
-                "empse",
-                "mse",
-                "relprec",
-                "modelse",
-                "relerror",
-                "cover",
-                "becover",
-                "power"
-              )
+              selected = SummaryStatistics
             ),
-            "Table options",
             shiny::sliderInput(
               inputId = "significantDigits",
               label = "Number of significant digits:",
