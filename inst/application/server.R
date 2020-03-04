@@ -267,13 +267,13 @@ function(input, output, session) {
   output$missingDataLaTeXTable <- shiny::renderPrint({
     shiny::req(data())
     knitr::kable(
-        x = missingDataTable(),
-        format = "latex",
-        booktabs = input$booktabs,
-        caption = input$missingDataLaTeXTableCaption,
-        digits = input$significantDigits,
-        row.names = FALSE
-      )
+      x = missingDataTable(),
+      format = "latex",
+      booktabs = input$booktabs,
+      caption = input$missingDataLaTeXTableCaption,
+      digits = input$significantDigits,
+      row.names = FALSE
+    )
   })
 
   ### Make summary statistics, and summary of 'simsum' object
@@ -386,14 +386,14 @@ function(input, output, session) {
     output$summaryStatisticsLaTeX <- shiny::renderPrint({
       shiny::req(data())
       knitr::kable(
-          x = prettySumm(),
-          format = "latex",
-          booktabs = input$booktabs,
-          linesep = "",
-          caption = input$summaryStatisticsLaTeXCaption,
-          digits = input$significantDigits,
-          row.names = FALSE
-        )
+        x = prettySumm(),
+        format = "latex",
+        booktabs = input$booktabs,
+        linesep = "",
+        caption = input$summaryStatisticsLaTeXCaption,
+        digits = input$significantDigits,
+        row.names = FALSE
+      )
     })
   })
 
