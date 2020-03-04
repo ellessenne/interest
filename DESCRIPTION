@@ -21,6 +21,7 @@ Imports:
  ggplot2,
  ggthemes,
  haven,
+ knitr,
  labelled,
  naniar (>= 0.4.2),
  readr,
@@ -29,10 +30,7 @@ Imports:
  shiny,
  shinydashboard,
  tidyr,
- viridis,
- xtable
-Suggests:
- knitr
+ viridis
 URL: https://github.com/ellessenne/interest
 BugReports: https://github.com/ellessenne/interest/issues
 VignetteBuilder: knitr

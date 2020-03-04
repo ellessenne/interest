@@ -386,10 +386,14 @@ function(input, output, session) {
     output$summaryStatisticsLaTeX <- shiny::renderPrint({
       shiny::req(data())
       print(
-        xtable::xtable(
+        knitr::kable(
           x = prettySumm(),
+          format = "latex",
+          booktabs = TRUE,
+          linesep = "",
           caption = input$summaryStatisticsLaTeXCaption,
-          digits = input$significantDigits
+          digits = input$significantDigits,
+          row.names = FALSE
         ),
         include.rownames = FALSE
       )
