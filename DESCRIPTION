@@ -1,5 +1,5 @@
 Package: interest
-Version: 0.0.3.9000
+Version: 0.0.4.9000
 Title: Interactively Explore Results from Simulation Studies
 Description: Explore results from simulation studies interactively using the shiny 
   app INTEREST. INTEREST stands for INteractive Tool for Exploring REsults from 
@@ -13,7 +13,7 @@ Authors@R: c(
   )
 License: GPL (>= 3)
 Depends:
- R (>= 2.10)
+ R (>= 3.5.0)
 Imports:
  devtools,
  dplyr,
@@ -23,7 +23,7 @@ Imports:
  haven,
  knitr,
  labelled,
- naniar (>= 0.4.2),
+ naniar (>= 0.5.0),
  readr,
  rlang,
  rsimsum (>= 0.8.0),
