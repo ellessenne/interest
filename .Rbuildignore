@@ -3,7 +3,6 @@ pdf
 csv
 dta
 sav
-rds
 sas7bdat
 NEWS.md
 TODO.md
@@ -17,3 +16,6 @@ README_files/*
 ^README-.*\.png$
 LICENSE
 ^data-raw$
+^MIsim\.RDS$
+^MIsim_big\.RDS$
+^MIsim_true\.RDS$
