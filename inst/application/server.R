@@ -447,6 +447,72 @@ function(input, output, session) {
 
   ### Update available summary statistics for plotting
   shiny::observe({
+    if (input$defineSe == "") {
+      shiny::updateSelectInput(
+        session,
+        inputId = "selectPlotEstimates",
+        choices = c(
+          "Scatter Plot (Estimates vs Estimates)" = "est",
+          "Bland-Altman Plot (Estimates vs Estimates)" = "est_ba",
+          "Ridgeline Plot (Estimates vs Estimates)" = "est_ridge",
+          "Density Plot (Estimates vs Estimates)" = "est_density",
+          "Hexbin Plot (Estimates vs Estimates)" = "est_hex"
+        )
+      )
+    }
+    if (input$whichTrue == "undefined" & input$defineSe == "") {
+      if (input$defineMethod == "") {
+        nv <- SummaryStatistics[SummaryStatistics %in% c("nsim", "thetamean", "thetamedian", "empse")]
+      } else {
+        nv <- SummaryStatistics[SummaryStatistics %in% c("nsim", "thetamean", "thetamedian", "empse", "relprec")]
+      }
+      shiny::updateSelectInput(
+        session,
+        inputId = "summaryStatisticsWhich",
+        choices = nv,
+        selected = nv
+      )
+    } else if (input$whichTrue != "undefined" & input$defineSe == "") {
+      if (input$defineMethod == "") {
+        nv <- SummaryStatistics[SummaryStatistics %in% c("nsim", "thetamean", "thetamedian", "bias", "empse", "mse")]
+      } else {
+        nv <- SummaryStatistics[SummaryStatistics %in% c("nsim", "thetamean", "thetamedian", "bias", "empse", "mse", "relprec")]
+      }
+      shiny::updateSelectInput(
+        session,
+        inputId = "summaryStatisticsWhich",
+        choices = nv,
+        selected = nv
+      )
+    } else if (input$whichTrue == "undefined" & input$defineSe != "") {
+      if (input$defineMethod == "") {
+        nv <- SummaryStatistics[SummaryStatistics %in% c("nsim", "thetamean", "thetamedian", "se2mean", "se2median", "empse", "modelse", "relerror", "becover", "power")]
+      } else {
+        nv <- SummaryStatistics[SummaryStatistics %in% c("nsim", "thetamean", "thetamedian", "se2mean", "se2median", "empse", "relprec", "modelse", "relerror", "becover", "power")]
+      }
+      shiny::updateSelectInput(
+        session,
+        inputId = "summaryStatisticsWhich",
+        choices = nv,
+        selected = nv
+      )
+    } else {
+      if (input$defineMethod == "") {
+        nv <- SummaryStatistics[!(SummaryStatistics == "relprec")]
+      } else {
+        nv <- SummaryStatistics
+      }
+      shiny::updateSelectInput(
+        session,
+        inputId = "summaryStatisticsWhich",
+        choices = nv,
+        selected = nv
+      )
+    }
+  })
+
+  ### Update available summary statistics for plotting
+  shiny::observe({
     shiny::req(data())
     shiny::updateSelectInput(
       session,
@@ -504,7 +570,8 @@ function(input, output, session) {
   makePlotSummary <- function() {
     shiny::req(data())
     shiny::validate(
-      shiny::need(input$defineMethod != "", message = "Plots not meaningful if there are no methods to compare."),
+      shiny::need(!(input$whichTrue != "fixed" & input$selectPlotSummaryStat %in% c("thetamean", "thetamedian") & input$selectPlotSummary == "lolly"), message = "Lolly plot not available for the selected performance measure without a fixed true value."),
+      shiny::need(!((input$defineSe == "" | input$whichTrue != "fixed") & input$selectPlotSummary == "zip"), message = "Zip plot not available without a (fixed) true value or standard errors."),
       shiny::need(!(is.null(input$defineBy) & input$selectPlotSummary == "nlp"), message = "Nested loop plot not meaningful when no 'by' factors are defined.")
     )
 
