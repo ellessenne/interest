@@ -106,7 +106,8 @@ body <- shinydashboard::dashboardBody(
             inline = TRUE
           ),
           shiny::uiOutput(outputId = "loadData"),
-          shiny::p("N.B.: Maximum file size to upload is 100MB. The example dataset is described in more detail in the ", shiny::em("user guide"), " tab.")
+          shiny::p("N.B.: Maximum file size to upload is 100MB."),
+          shiny::p("The example dataset is from a simulation study to assess robustness of the t-test, and is described in more detail in the ", shiny::em("user guide"), " tab.")
         )
       ),
       shiny::fluidRow(

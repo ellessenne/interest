@@ -459,6 +459,23 @@ function(input, output, session) {
           "Hexbin Plot (Estimates vs Estimates)" = "est_hex"
         )
       )
+    } else {
+      shiny::updateSelectInput(
+        session,
+        inputId = "selectPlotEstimates",
+        choices = c(
+          "Scatter Plot (Estimates vs Estimates)" = "est",
+          "Scatter Plot (SEs vs SEs)" = "se",
+          "Bland-Altman Plot (Estimates vs Estimates)" = "est_ba",
+          "Bland-Altman Plot (SEs vs SEs)" = "se_ba",
+          "Ridgeline Plot (Estimates vs Estimates)" = "est_ridge",
+          "Ridgeline Plot (SEs vs SEs)" = "se_ridge",
+          "Density Plot (Estimates vs Estimates)" = "est_density",
+          "Density Plot (SEs vs SEs)" = "se_density",
+          "Hexbin Plot (Estimates vs Estimates)" = "est_hex",
+          "Hexbin Plot (SEs vs SEs)" = "se_hex"
+        )
+      )
     }
     if (input$whichTrue == "undefined" & input$defineSe == "") {
       if (input$defineMethod == "") {
