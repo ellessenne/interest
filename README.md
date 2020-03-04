@@ -8,11 +8,13 @@ INTEREST, acronym for **IN**teractive **T**ool for **E**xploring
 developed using R and [`shiny`](https://shiny.rstudio.com/). It allows
 exploring results from simulation studies interactively.
 
+<!-- badges: start -->
+
 [![AppVeyor Build
 Status](https://ci.appveyor.com/api/projects/status/github/ellessenne/interest?branch=master&svg=true)](https://ci.appveyor.com/project/ellessenne/interest)
 [![Travis-CI Build
 Status](https://travis-ci.org/ellessenne/interest.svg?branch=master)](https://travis-ci.org/ellessenne/interest)
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/interest)](https://cran.r-project.org/package=interest)
+<!-- badges: end -->
 
 # Live demo
 
@@ -27,8 +29,8 @@ INTEREST can be installed locally as a standalone R package, by typing
 the following R commands in your R console:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("ellessenne/interest")
+# install.packages("remotes")
+remotes::install_github("ellessenne/interest")
 ```
 
 This requires a working installation of [R](https://www.r-project.org/)
