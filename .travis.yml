@@ -7,7 +7,7 @@ cache: packages
 os:
   - linux
   - osx
-matrix:
+jobs:
   exclude:
     - r: devel
       os: osx
