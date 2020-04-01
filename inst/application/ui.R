@@ -163,7 +163,7 @@ body <- shinydashboard::dashboardBody(
             label = "",
             choices = list(
               "Fixed" = "fixed",
-              "Row-specific" = "row-specific",
+              "Use row-specific true values" = "row-specific",
               "Undefined" = "undefined"
             ),
             selected = "undefined"
@@ -185,8 +185,8 @@ body <- shinydashboard::dashboardBody(
             inputId = "whichCIs",
             label = "",
             choices = list(
-              "Fixed" = "fixed",
-              "Row-specific" = "row-specific"
+              "Calculate Wald-type CIs using point estimates and SEs" = "fixed",
+              "Use row-specific CIs" = "row-specific"
             ),
             selected = "fixed"
           ),
