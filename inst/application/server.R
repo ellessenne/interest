@@ -689,13 +689,6 @@ function(input, output, session) {
         icon = shiny::icon("download")
       )
     )
-    output$plotEstimatesButton <- shiny::renderUI(
-      shiny::downloadButton(
-        outputId = "exportPlotEstimatesButton",
-        label = "Save plot",
-        icon = shiny::icon("download")
-      )
-    )
     output$plotSummaryButton <- shiny::renderUI(
       shiny::downloadButton(
         outputId = "exportPlotSummaryButton",
@@ -703,5 +696,17 @@ function(input, output, session) {
         icon = shiny::icon("download")
       )
     )
+  })
+  shiny::observe({
+    shiny::req(data())
+    if (shiny::req(input$defineSe) != "" & shiny::req(input$defineMethod) != "") {
+      output$plotEstimatesButton <- shiny::renderUI(
+        shiny::downloadButton(
+          outputId = "exportPlotEstimatesButton",
+          label = "Save plot",
+          icon = shiny::icon("download")
+        )
+      )
+    }
   })
 }
