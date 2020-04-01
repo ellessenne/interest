@@ -561,7 +561,7 @@ function(input, output, session) {
   makePlotEstimates <- function() {
     shiny::req(data())
     shiny::validate(
-      shiny::need(input$defineMethod != "", message = "Plots not meaningful if there are no methods to compare.")
+      shiny::need(input$defineMethod != "", message = "Plot not meaningful if there are no methods to compare.")
     )
 
     df <- data()
