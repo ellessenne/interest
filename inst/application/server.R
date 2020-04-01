@@ -119,20 +119,27 @@ function(input, output, session) {
     })
   })
 
-  ### DT with original dataset in the "View uploaded data" tab
-  output$uploadedDataTable <- DT::renderDT(
-    {
-      shiny::validate(
-        shiny::need(
-          !is.null(data()),
-          "Upload a dataset first, via the 'Data' tab."
-        )
-      )
-      data()
-    },
-    options = list(pageLength = 20)
-  )
 
+  ### DT with original dataset in the "View uploaded data" tab
+  output$uploadedDataTable <- DT::renderDT({
+    shiny::validate(
+      shiny::need(
+        !is.null(data()),
+        "Upload a dataset first, via the 'Data' tab."
+      )
+    )
+    idx <- sapply(data(), is.numeric)
+    idx_int <- sapply(data(), rlang::is_bare_integerish)
+    DT::formatRound(
+      DT::formatRound(
+        table = DT::datatable(data(), options = list(pageLength = 20)),
+        columns = names(data())[idx],
+        digits = 4
+      ),
+      columns = names(data())[idx_int],
+      digits = 0
+    )
+  })
 
   ### Missing data plots
   # Populate select input depending on the presence of 'method' or not
