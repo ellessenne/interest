@@ -639,7 +639,7 @@ function(input, output, session) {
       )
     }
   )
-  output$exportPlotEstimates <- shiny::downloadHandler(
+  output$exportPlotEstimatesButton <- shiny::downloadHandler(
     filename = function() {
       paste0("plot.", input$plotFormat)
     },
