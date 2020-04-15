@@ -75,6 +75,7 @@ function(input, output, session) {
     shiny::updateSelectInput(session, inputId = "defineTrueCol", choices = names(data()))
     shiny::updateSelectInput(session, inputId = "defineCIlower", choices = names(data()))
     shiny::updateSelectInput(session, inputId = "defineCIupper", choices = names(data()))
+    shiny::updateSelectInput(session, inputId = "defineCIdf", choices = names(data()))
   })
   # Detect methods if method is specified
   shiny::observe({
@@ -324,8 +325,13 @@ function(input, output, session) {
     # CIs
     if (input$whichCIs == "fixed") {
       inci.limits <- NULL
+      indf <- NULL
+    } else if (input$whichCIs == "fixed-t") {
+      inci.limits <- NULL
+      indf <- input$defineCIdf
     } else {
       inci.limits <- c(input$defineCIlower, input$defineCIupper)
+      indf <- NULL
     }
 
     # Call rsimsum
@@ -339,6 +345,7 @@ function(input, output, session) {
       by = input$defineBy,
       x = TRUE,
       ci.limits = inci.limits,
+      df = indf,
       dropbig = input$rsimsumDropbig,
       control = ctrl
     )

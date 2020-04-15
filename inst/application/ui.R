@@ -185,10 +185,15 @@ body <- shinydashboard::dashboardBody(
             inputId = "whichCIs",
             label = "",
             choices = list(
-              "Calculate Wald-type CIs using point estimates and SEs" = "fixed",
-              "Use row-specific CIs" = "row-specific"
+              "Calculate Wald-type CIs using normal theory, point estimates and SEs" = "fixed",
+              "Calculate Wald-type CIs using t ciritical values, point estimates and SEs" = "fixed-t",
+              "Use row-specific CIs contained in columns" = "row-specific"
             ),
             selected = "fixed"
+          ),
+          shiny::conditionalPanel(
+            condition = "input.whichCIs == 'fixed-t'",
+            shiny::selectInput(inputId = "defineCIdf", label = "Column degrees of freedom:", choices = "")
           ),
           shiny::conditionalPanel(
             condition = "input.whichCIs == 'row-specific'",
