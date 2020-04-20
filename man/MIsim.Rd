@@ -5,13 +5,17 @@
 \alias{MIsim}
 \alias{MIsim_big}
 \title{Example of a simulation study on missing data}
-\format{A data frame with 3,000 rows and 4 variables:
+\format{
+A data frame with 3,000 rows and 4 variables:
 \itemize{
 \item \code{dataset} Simulated dataset number.
 \item \code{method} Method used (\code{CC}, \code{MI_LOGT} or \code{MI_T}).
 \item \code{b} Point estimate.
 \item \code{se} Standard error of the point estimate.
-}}
+}
+
+An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 30000 rows and 6 columns.
+}
 \usage{
 MIsim
 
